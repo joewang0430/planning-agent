@@ -1,14 +1,14 @@
-# main entrance of the 专项规划Agent project
+# main entrance of the Planning Agent Project server.
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Planning Agent API", version="1.0.0")
 
-# 配置 CORS
+# CORS settings
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # 前端 Next.js 默认端口，根据需要配置
+    allow_origins=["http://localhost:3000"],  # Next.js default port 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

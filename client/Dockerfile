@@ -1,22 +1,21 @@
-# 官方 Node.js 20 Alpine 基础镜像
+# official Node.js 20 Alpine img
 FROM node:20-alpine
 
-# 设置工作目录： /app
+# work directory: /app
 WORKDIR /app
 
-# 复制 package.json 和 package-lock.json 到容器中，用于安装依赖
+# copy package.json and package-lock.json into container, used to install deps
 COPY package*.json ./
 
-# 安装项目依赖
+# install dependencies
 RUN npm install
 
-# 复制项目的全部源代码到容器工作目录
+# copy all work directories
 COPY . .
 
-# Next.js 默认开发端口，按需更改
+# Next.js default, change in need.
 EXPOSE 3000
 
-# 生产：先构建再启动；开发：启动，支持热载
 # PROD：
 # CMD ["sh", "-c", "npm run build && npm start"]
 # DEV：
