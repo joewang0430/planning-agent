@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./server
+    volumes:
+      - ./server:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  frontend:
+    build: ./client
+    volumes:
+      - ./client:/app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - backend
