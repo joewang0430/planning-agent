@@ -14,6 +14,7 @@ services:
     build: ./client
     volumes:
       - ./client:/app
+      - /app/node_modules # Note: 别再挂载node_module了
     ports:
       - "3000:3000"
     environment:

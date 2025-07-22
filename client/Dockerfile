@@ -1,5 +1,5 @@
-# 官方 Node.js 18 Alpine 基础镜像
-FROM node:18-alpine
+# 官方 Node.js 20 Alpine 基础镜像
+FROM node:20-alpine
 
 # 设置工作目录： /app
 WORKDIR /app
