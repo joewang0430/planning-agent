@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useState } from 'react';
 import BaseButtonHome from '@/components/home/BaseButtonHome';
@@ -26,7 +26,7 @@ export default function Hero() {
       />
       <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 w-full justify-center items-center">
         <BaseButtonHome />
-        <PlanningButtonHome />
+        <PlanningButtonHome title={title} />
       </div>
     </div>
   );
