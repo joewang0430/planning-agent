@@ -6,6 +6,12 @@
 }
 
 @theme inline {
+  --color-plagt-blue-1: var(--plagt-blue-1);
+  --color-plagt-blue-2: var(--plagt-blue-2);
+  --color-plagt-blue-bg: var(--plagt-blue-bg);
+  --color-plagt-green-bg: var(--plagt-green-bg);
+  --color---plagt-grey-txt: var(--plagt-grey-txt);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -14,13 +20,29 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+    --plagt-blue-1: #547EF3;
+    --plagt-blue-2: #7d98e1;
+    --plagt-blue-bg: #8BBDF9;
+    --plagt-green-bg: #73DB7D;
+    --plagt-grey-txt: #9A9A9A;
+
     --background: #0a0a0a;
     --foreground: #ededed;
   }
 }
 
 body {
+  --plagt-blue-1: #547EF3;
+  --plagt-blue-2: #7d98e1;
+  --plagt-blue-bg: #8BBDF9;
+  --plagt-green-bg: #73DB7D;
+  --plagt-grey-txt: #9A9A9A;
+
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.hero-gradient-bg {
+  background: linear-gradient(135deg, #eaf3ff 0%, #d5f6e7 100%);
 }

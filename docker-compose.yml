@@ -14,7 +14,7 @@ services:
     build: ./client
     volumes:
       - ./client:/app
-      - /app/node_modules # Note: 别再挂载node_module了
+      - /app/node_modules # Note: do NOT mount node_module later 
     ports:
       - "3000:3000"
     environment:
