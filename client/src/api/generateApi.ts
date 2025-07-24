@@ -11,7 +11,7 @@ export const generateOutline = async(title: string, knowledgeBaseIds?: string[])
             title,
             knowledgeBaseIds,   // user locked knowledge base
         }),
-    })
+    });
     if (!res.ok) throw new Error('生成大纲失败: generateApi.ts');
     return await res.json();
 };
@@ -31,7 +31,7 @@ export const generateContent = async(
             outline,
             knowledgeBaseIds,
         }),
-    })
+    });
     if (!res.ok) throw new Error('生成内容失败: generateApi.ts');
     return await res.json();
 };
