@@ -29,7 +29,7 @@ def generate_outline(state: PlanningState) -> PlanningState:
     ]
 
     completion = client.chat.completions.create(
-        model="moonshot-v1-128k",
+        model="moonshot-v1-8k",
         messages=messages,
     )
 

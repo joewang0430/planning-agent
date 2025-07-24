@@ -1,6 +1,7 @@
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
+// TOSTRUCT
 export const generateOutline = async(title: string, knowledgeBaseIds?: string[]) => {
     const res = await fetch(`${API_BASE_URL}/api/outline`, {
         method: 'POST',
@@ -9,7 +10,7 @@ export const generateOutline = async(title: string, knowledgeBaseIds?: string[])
         },
         body: JSON.stringify({
             title,
-            knowledgeBaseIds,   // user locked knowledge base
+            // knowledgeBaseIds,   // user locked knowledge base
         }),
     });
     if (!res.ok) throw new Error('生成大纲失败: generateApi.ts');
