@@ -3,6 +3,7 @@ from openai import OpenAI
 from typing import TypedDict
 import os
 from dotenv import load_dotenv
+from .prompt import get_outline_prompt, get_test_prompt
 
 load_dotenv()
 
@@ -22,11 +23,7 @@ class PlanningState(TypedDict):
 def generate_outline(state: PlanningState) -> PlanningState:
     '''生成提纲'''
     title = state["title"]
-    
-    messages = [
-        {"role": "system", "content": "你是一个政策研究专家"},
-        {"role": "user", "content": f"根据以下政策探究结果，为'{title}'生成专项规划提纲"}
-    ]
+    messages = get_outline_prompt(title)
 
     completion = client.chat.completions.create(
         model="moonshot-v1-8k",
@@ -39,9 +36,7 @@ def generate_outline(state: PlanningState) -> PlanningState:
 
 # test if api works
 def test_api():
-    messages = [
-        {"role": "user", "content": "你好"}
-    ]
+    messages = get_test_prompt()
     completion = client.chat.completions.create(
         model="moonshot-v1-128k",
         messages=messages,
