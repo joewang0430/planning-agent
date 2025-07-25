@@ -27,7 +27,7 @@ const LeftContent = ({loading, data}: LeftContentProps) => (
                         <div className="text-blue-500">正在生成中...</div>
                     </div>
                 ) : data ? (
-                    <OutlineEditor outline={outlineExample} />
+                    <OutlineEditor outline={typeof data.outline === "string" ? JSON.parse(data.outline) : data.outline} />
                 ) : (
                     <div className="text-center py-8 text-gray-500">
                         加载失败

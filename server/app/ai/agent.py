@@ -20,25 +20,35 @@ class PlanningState(TypedDict):
     outline: str 
     content: str 
 
-def generate_outline(state: PlanningState) -> PlanningState:
-    '''生成提纲'''
-    title = state["title"]
-    messages = get_outline_prompt(title)
+# def generate_outline(state: PlanningState) -> PlanningState:
+#     '''生成提纲'''
+#     title = state["title"]
+#     messages = get_outline_prompt(title)
 
+#     completion = client.chat.completions.create(
+#         model="moonshot-v1-8k",
+#         messages=messages,
+#     )
+
+#     outline = completion.choices[0].message.content
+#     state["outline"] = outline
+#     return state
+
+def generate_outline(title: str):
+    messages = get_outline_prompt(title)
     completion = client.chat.completions.create(
         model="moonshot-v1-8k",
         messages=messages,
     )
+    ontline = completion.choices[0].message.content
 
-    outline = completion.choices[0].message.content
-    state["outline"] = outline
-    return state
+    return ontline
 
 # test if api works
 def test_api():
     messages = get_test_prompt()
     completion = client.chat.completions.create(
-        model="moonshot-v1-128k",
+        model="moonshot-v1-8k",
         messages=messages,
     )
     answer = completion.choices[0].message.content
@@ -47,5 +57,5 @@ def test_api():
 
 # test
 if __name__ == "__main__":
-    answer = test_api()
+    answer = generate_outline("杭州市政府关于十五五的专项规划")
     print(answer)
