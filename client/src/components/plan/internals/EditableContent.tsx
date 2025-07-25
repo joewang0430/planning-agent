@@ -12,7 +12,7 @@ const EditableContent = ({
 }) => {
     const ref = useRef<HTMLDivElement>(null);
 
-    // 设置内容和自适应高度
+    // set the content and adaptive height
     useEffect(() => {
         if (ref.current) {
             ref.current.innerText = defaultValue || "";
@@ -21,7 +21,7 @@ const EditableContent = ({
         }
     }, [defaultValue]);
 
-    // 输入时自适应高度
+    // adaptive height when inputting
     const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
         const el = e.currentTarget;
         el.style.height = "auto";
@@ -42,5 +42,6 @@ const EditableContent = ({
         />
     );
 };
+
 
 export default EditableContent;

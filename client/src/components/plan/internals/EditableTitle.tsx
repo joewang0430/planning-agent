@@ -31,7 +31,7 @@ const EditableTitle = ({
             {/* when hovering, the "Rewrite Title" button is displayed */}
             {hover && (
                 <button
-                    className={`absolute -top-8 left-0 bg-blue-500 text-white px-2 py-1 rounded shadow text-xs`}
+                   className="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded shadow text-xs" // ← 这里改定位
                 >
                     重写标题
                 </button>
@@ -39,5 +39,7 @@ const EditableTitle = ({
         </div>
     );
 };
+
+// className="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded shadow text-xs" // ← 这里改定位
 
 export default EditableTitle;
