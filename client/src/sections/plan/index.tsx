@@ -101,10 +101,10 @@ export const Plan = () => {
             </div>
             {/* modile layout */}
             <div className="max-w-4xl mx-auto lg:hidden space-y-6 flex-1 min-h-0">
-                <div className="bg-white rounded-lg border border-blue-200 p-6 shadow-sm flex flex-col min-h-[300px] flex-1">
+                <div className="bg-white rounded-lg border border-blue-200 p-6 shadow-sm flex flex-col h-[80vh] min-h-0">
                     <LeftContent loading={loading} data={data}/>
                 </div>
-                <div className="bg-white rounded-lg border border-blue-200 p-6 shadow-sm flex flex-col min-h-[300px] flex-1">
+                <div className="bg-white rounded-lg border border-blue-200 p-6 shadow-sm flex flex-col h-[80vh] min-h-0">
                     <RightContent />
                 </div>
             </div>

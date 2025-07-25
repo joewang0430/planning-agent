@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useRef, useEffect } from "react";
@@ -13,23 +12,33 @@ const EditableContent = ({
 }) => {
     const ref = useRef<HTMLDivElement>(null);
 
+    // 设置内容和自适应高度
     useEffect(() => {
         if (ref.current) {
             ref.current.innerText = defaultValue || "";
+            ref.current.style.height = "auto";
+            ref.current.style.height = ref.current.scrollHeight + "px";
         }
     }, [defaultValue]);
+
+    // 输入时自适应高度
+    const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
+        const el = e.currentTarget;
+        el.style.height = "auto";
+        el.style.height = el.scrollHeight + "px";
+        if (onChange) {
+            onChange(el.innerText);
+        }
+    };
 
     return (
         <div
             ref={ref}
             contentEditable
             suppressContentEditableWarning
-            className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed border border-gray-200 rounded p-3 min-h-[120px] focus:outline-blue-400"
-            onInput={e => {
-                if (onChange) {
-                    onChange((e.target as HTMLDivElement).innerText);
-                }
-            }}
+            className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed border border-gray-200 rounded p-3 min-h-[32px] focus:outline-blue-400 transition-all"
+            style={{ overflow: "hidden" }}
+            onInput={handleInput}
         />
     );
 };

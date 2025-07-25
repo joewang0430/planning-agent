@@ -6,11 +6,11 @@ import outlineExample from "@/data/examples/outline.json";
 interface LeftContentProps {
     loading: boolean;
     data: GenerateOutlineResponse | null;
-}
+};
 
 const LeftContent = ({loading, data}: LeftContentProps) => (
     <div className="flex flex-col h-full min-h-0">
-        {/* 顶部固定 */}
+        {/* top */}
         <div>
             <div className="bg-blue-50 px-3 py-1 rounded text-sm text-blue-600 inline-block mb-4">
                 已参考 4 个知识库
@@ -19,7 +19,7 @@ const LeftContent = ({loading, data}: LeftContentProps) => (
                 查看/编辑知识库 →
             </button>
         </div>
-        {/* 中间可滚动区域 */}
+        {/* middle rollable */}
         <div className="flex-1 min-h-0 overflow-y-auto py-2">
             <div className="space-y-6">
                 {loading ? (
@@ -35,7 +35,7 @@ const LeftContent = ({loading, data}: LeftContentProps) => (
                 )}
             </div>
         </div>
-        {/* 底部固定 */}
+        {/* button */}
         <div className="mt-auto flex flex-wrap gap-2 justify-between items-center pt-4">
             <button className="flex-shrink-0 flex items-center text-gray-600 hover:text-gray-800 min-w-[80px]">
                 重写大纲
