@@ -1,9 +1,11 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { generateOutline } from '../../api/generateApi';
 import { GenerateOutlineResponse } from "@/data/generateTypes";
+import RightContent from "@/components/plan/RightContent";
+import LeftContent from "@/components/plan/LeftContent";
 
 export const Plan = () => {
     const searchParams = useSearchParams();
@@ -11,16 +13,15 @@ export const Plan = () => {
     const [data, setData] = useState<GenerateOutlineResponse | null>(null);
     const [loading, setLoading] = useState(false);
 
-    // useEffect(() => {
-    //     fetch(`${process.env.NEXT_PUBLIC_API_URL}/endpointTBD?title=${encodeURIComponent(title)}`)
-    //         .then(res => res.json())
-    //         .then(res => setData(res))
-    //         .catch(() => setData(null))
-    // }, [title]);
+    // Segmentation ratio status
+    const [leftWidth, setLeftWidth] = useState(60); // default left 60%
+    const [isDragging, setIsDragging] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
         if (title) {
             setLoading(true);
-            generateOutline(title)// TOSTRUCT
+            generateOutline(title)
                 .then(res => {
                     setData(res);
                     setLoading(false);
@@ -31,24 +32,82 @@ export const Plan = () => {
                     setLoading(false);
                 });
         }
-    },[title])
+    }, [title]);
+
+    // dragging process function
+    const handleMouseDown = () => setIsDragging(true);
+
+    const handleMouseMove = (e: MouseEvent) => {
+        if (!isDragging || !containerRef.current) return;
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const containerWidth = containerRect.width;
+        const mouseX = e.clientX - containerRect.left;
+        const newLeftWidth = Math.min(Math.max((mouseX / containerWidth) * 100, 20), 80);
+        setLeftWidth(newLeftWidth);
+    };
+
+    const handleMouseUp = () => setIsDragging(false);
+
+    useEffect(() => {
+        if (isDragging) {
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+        }
+        return () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        };
+    }, [isDragging]);
 
     return (
-        <>
-            <h2>专项规划详情</h2>
-            <div>标题: {title}</div>
-            <div>
-                {loading ? (
-                    "正在生成中..."
-                ) : data ? (
-                    <>
-                        <h3>生成结果:</h3>
-                        <pre style={{whiteSpace: 'pre-wrap'}}>{data.outline}</pre>
-                    </>
-                ) : (
-                    "加载失败"
-                )}
+        <main className="h-screen flex flex-col bg-gray-50 p-6">
+            <div className="text-center mb-8">
+                <h1 className="text-2xl font-bold text-gray-800">
+                    {title || "专项规划生成"}
+                </h1>
             </div>
-        </>
+            {/* main content */}
+            <div 
+                ref={containerRef}
+                className="w-full px-4 mx-auto hidden lg:flex gap-1 flex-1 min-h-0"
+            >
+                {/* left box */}
+                <div 
+                    className="bg-white rounded-lg border border-blue-200 p-6 shadow-sm flex flex-col h-full min-h-0"
+                    style={{ width: `${leftWidth}%` }}
+                >
+                    <LeftContent loading={loading} data={data}/>
+                </div>
+                {/* drag dividing line */}
+                <div 
+                    className={`w-2 bg-gray-300 hover:bg-blue-400 cursor-col-resize flex items-center justify-center rounded transition-colors ${
+                        isDragging ? 'bg-blue-500' : ''
+                    }`}
+                    onMouseDown={handleMouseDown}
+                >
+                    <div className="w-1 h-8 bg-white rounded opacity-70"></div>
+                </div>
+                {/* right box */}
+                <div 
+                    className="bg-white rounded-lg border border-blue-200 p-6 shadow-sm flex flex-col h-full min-h-0"
+                    style={{ width: `${100 - leftWidth}%` }}
+                >
+                    <RightContent />
+                </div>
+            </div>
+            {/* modile layout */}
+            <div className="max-w-4xl mx-auto lg:hidden space-y-6 flex-1 min-h-0">
+                <div className="bg-white rounded-lg border border-blue-200 p-6 shadow-sm flex flex-col min-h-[300px] flex-1">
+                    <LeftContent loading={loading} data={data}/>
+                </div>
+                <div className="bg-white rounded-lg border border-blue-200 p-6 shadow-sm flex flex-col min-h-[300px] flex-1">
+                    <RightContent />
+                </div>
+            </div>
+        </main>
     );
 };
