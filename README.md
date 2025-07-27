@@ -23,6 +23,15 @@ Create a `.env.local` file in the `client` folder:
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
+## 2b. Configure Backend Environment Variables
+
+Create a `.env` file in the `server` folder and add your AI API Key:
+
+```
+MOONSHOT_API_KEY=your_api_key_here
+FRONTEND_URL=http://localhost:3000
+```
+
 ## 3. Run the Project in Docker
 
 Make sure Docker Desktop is running.

@@ -7,7 +7,7 @@ import { GenerateOutlineResponse } from "@/data/generateTypes";
 import RightContent from "@/components/plan/RightContent";
 import LeftContent from "@/components/plan/LeftContent";
 
-export const Plan = () => {
+const Plan = () => {
     const searchParams = useSearchParams();
     const title = searchParams.get('title') || '';
     const [data, setData] = useState<GenerateOutlineResponse | null>(null);
@@ -111,3 +111,5 @@ export const Plan = () => {
         </main>
     );
 };
+
+export default Plan;
