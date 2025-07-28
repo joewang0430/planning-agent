@@ -8,7 +8,7 @@ export type OutlineStruct = OutlineSection[];
 
 
 // kb list
-interface KnowledgeBaseFile {
+export interface KnowledgeBaseFile {
     name: string;
     type: string;
 }

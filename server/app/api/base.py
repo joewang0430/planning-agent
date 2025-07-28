@@ -7,7 +7,7 @@ KB_DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../kb/dat
 
 @base_router.get("/kb/list")
 def get_kb_list():
-    print("get_kb_list 路由被调用") #TODO: delete later
+    # print("get_kb_list 路由被调用") 
     """
     Fintch scans the knowledge base directory and 
     returns all knowledge base files by folder classification
