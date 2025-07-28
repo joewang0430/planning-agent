@@ -11,15 +11,20 @@ interface KnowledgeBaseCardProps {
 const KnowledgeBaseCard: React.FC<KnowledgeBaseCardProps> = ({ name, type = "db", selected, onClick }) => {
   return (
     <div
-      className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-sm border transition cursor-pointer bg-gray-100 hover:bg-blue-100 border-gray-200 ${selected ? "ring-2 ring-blue-400" : ""}`}
+      className={`flex flex-row px-4 py-3 rounded-lg shadow-sm border transition cursor-pointer bg-gray-100 hover:bg-blue-100 border-gray-200 ${selected ? "ring-2 ring-blue-400" : ""}`}
+      style={{ minHeight: 72, height: 'auto', alignItems: 'center' }}
       onClick={onClick}
     >
-      {type === "db" ? (
-        <FaDatabase className="text-2xl text-gray-500" />
-      ) : (
-        <FaFileAlt className="text-2xl text-gray-400" />
-      )}
-      <span className="text-base text-gray-700 truncate">{name}</span>
+      <div style={{width: 32, minWidth: 32, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        {type === "db" ? (
+          <FaDatabase style={{fontSize: 24}} className="text-gray-500" />
+        ) : (
+          <FaFileAlt style={{fontSize: 24}} className="text-gray-400" />
+        )}
+      </div>
+      <div className="flex-1 ml-3">
+        <span className="text-sm text-gray-700 whitespace-pre-line break-words" style={{wordBreak: 'break-word'}}>{name}</span>
+      </div>
     </div>
   );
 };
