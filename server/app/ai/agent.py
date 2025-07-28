@@ -3,15 +3,19 @@ from openai import OpenAI
 from typing import TypedDict
 import os
 from dotenv import load_dotenv
-from .prompt import get_outline_prompt, get_test_prompt
+from .prompt import Prompt
 
 load_dotenv()
+DEFAULT_MODEL_NAME = "moonshot-v1-8k"
 
-# config kimi api client
-client = OpenAI(
-    api_key=os.getenv("MOONSHOT_API_KEY"), 
-    base_url="https://api.moonshot.cn/v1",
-)
+EXAMPLE_TITLE_1 = "杭州市政府关于十五五的专项规划"
+EXAMPLE_TITLE_2 = "杭州市城市轨道交通网络‘十五五’发展专项规划（2021-2025年）"
+
+# config kimi api client, globally
+# client = OpenAI(
+#     api_key=os.getenv("API_KEY"), 
+#     base_url=os.getenv("BASE_URL"), 
+# )
 
 # define state struct for langgraph
 class PlanningState(TypedDict):
@@ -20,42 +24,65 @@ class PlanningState(TypedDict):
     outline: str 
     content: str 
 
-# def generate_outline(state: PlanningState) -> PlanningState:
-#     '''生成提纲'''
-#     title = state["title"]
-#     messages = get_outline_prompt(title)
+# check if the title is valid
+class ClassificationAgent:
+    def __init__(self):
+        self.client = OpenAI(
+            api_key=os.getenv("API_KEY"), 
+            base_url=os.getenv("BASE_URL"), 
+        )
+        self.model_name = os.getenv("MODEL_NAME", DEFAULT_MODEL_NAME)
 
-#     completion = client.chat.completions.create(
-#         model="moonshot-v1-8k",
-#         messages=messages,
-#     )
+    def classify_title(self, title: str):
+        messages = Prompt.get_classification_prompt(title)
+        completion = self.client.chat.completions.create(
+            model=self.model_name,
+            messages=messages,
+        )
+        classification = completion.choices[0].message.content
+        return classification
 
-#     outline = completion.choices[0].message.content
-#     state["outline"] = outline
-#     return state
 
-def generate_outline(title: str):
-    messages = get_outline_prompt(title)
-    completion = client.chat.completions.create(
-        model="moonshot-v1-8k",
-        messages=messages,
-    )
-    ontline = completion.choices[0].message.content
+# class solving outline
+class OutlineAgent:
+    def __init__(self):
+        self.client = OpenAI(
+            api_key=os.getenv("API_KEY"), 
+            base_url=os.getenv("BASE_URL"), 
+        )
+        self.model_name = os.getenv("MODEL_NAME", DEFAULT_MODEL_NAME) # default: moonshot
 
-    return ontline
+    def generate_outline(self, title: str):
+        messages = Prompt.get_outline_prompt(title)
+        completion = self.client.chat.completions.create(
+            model=self.model_name,
+            messages=messages,
+        )
+        outline = completion.choices[0].message.content
+        return outline
+
 
 # test if api works
-def test_api():
-    messages = get_test_prompt()
-    completion = client.chat.completions.create(
-        model="moonshot-v1-8k",
-        messages=messages,
-    )
-    answer = completion.choices[0].message.content
+class TestAgent:
+    def __init__(self):
+        self.client = OpenAI(
+            api_key=os.getenv("API_KEY"), 
+            base_url=os.getenv("BASE_URL"), 
+        )
+        self.model_name = os.getenv("MODEL_NAME", DEFAULT_MODEL_NAME)
     
-    return answer
+    def test_api(self):
+        messages = Prompt.get_test_prompt()
+        completion = self.client.chat.completions.create(
+            model=self.model_name,
+            messages=messages,
+        )
+        answer = completion.choices[0].message.content
+        
+        return answer
 
 # test
 if __name__ == "__main__":
-    answer = generate_outline("杭州市政府关于十五五的专项规划")
+    tested_agent = ClassificationAgent()
+    answer = tested_agent.classify_title(EXAMPLE_TITLE_2)
     print(answer)

@@ -137,7 +137,7 @@ const KbSelector = () => {
                         </div>
                     </div>
                 </div>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2 overflow-y-auto px-2 pt-2 pb-2" style={{maxHeight: 400}}>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2 overflow-y-auto px-2 pt-2 pb-2 mb-4" style={{maxHeight: 400}}>
                     {other.length === 0 && activeTag ? (
                         <div className="col-span-2 text-gray-400 text-center py-8">暂无知识库文件</div>
                     ) : (
@@ -164,8 +164,8 @@ const KbSelector = () => {
                         })
                     )}
                 </div>
-
-                <div className="flex justify-center gap-4 mt-4">
+                
+                <div className="flex justify-center gap-4 mt-auto">
                     <button
                         className="px-8 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 disabled:bg-gray-300"
                         disabled={!selectedOtherKbName}

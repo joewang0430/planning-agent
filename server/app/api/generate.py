@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 import json
-from ..ai import agent
+from ..ai.agent import OutlineAgent
 
 generate_router = APIRouter()
 
@@ -14,12 +14,13 @@ class GenerateOutlineReturn(BaseModel):
     title: str
     outline: str
 
+outline_agent = OutlineAgent()
 
 @generate_router.post("/api/outline")
 async def router_generate_outline(req: GenerateOutlineRequest):
     try: 
         # result = agent.test_api()
-        result = agent.generate_outline(req.title)
+        result = outline_agent.generate_outline(req.title)
         return GenerateOutlineReturn(
             success=True,
             title=req.title,
