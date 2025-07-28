@@ -18,6 +18,8 @@ const KbSelector = () => {
     const { selectedKbList, addKb, removeKb } = useKnowledgeBase();
     // selected kb in right part: 所有知识库, currently, it only support select one once
     const [selectedOtherKbName, setSelectedOtherKbName] = useState<string | null>();
+    // 左侧已调用知识库选中
+    const [selectedLeftKbIdx, setSelectedLeftKbIdx] = useState<number | null>(null);
 
     useEffect(() => {
         fetchKbList().then(list => {
@@ -51,12 +53,38 @@ const KbSelector = () => {
             {/* 已调用知识库（mock） */}
             <div className="border border-plagt-blue-1 rounded-2xl p-6 bg-white flex flex-col min-h-[400px] max-h-[600px] w-full md:w-1/2">
                 <div className="text-center text-lg font-semibold text-blue-700 mb-4">已调用知识库</div>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-6 overflow-y-auto" style={{maxHeight: 400}}>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2 overflow-y-auto pt-2 pb-2 px-2" style={{maxHeight: 400}}>
                     {selectedKbList.map((kb, i) => (
-                        <KnowledgeBaseCard key={i} name={kb.name} type={kb.type as any} status="normal" />
+                        <div key={i}>
+                            <KnowledgeBaseCard 
+                                name={kb.name} 
+                                type="db"
+                                status={selectedLeftKbIdx === i ? "selected" : "normal"}
+                                onClick={() => setSelectedLeftKbIdx(i)} 
+                            />
+                        </div>
                     ))}
                 </div>
-                <button className="mx-auto mt-auto px-8 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600">保存</button>
+                <div className="flex gap-4 justify-center mt-auto">
+                    <button 
+                        className={`px-6 py-2 rounded-lg font-medium ${selectedLeftKbIdx === null ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                        disabled={selectedLeftKbIdx === null}
+                        onClick={() => {
+                            if (selectedLeftKbIdx !== null) {
+                                removeKb(selectedKbList[selectedLeftKbIdx].name);
+                                setSelectedLeftKbIdx(null);
+                            }
+                        }}
+                    >移除所选</button>
+                    <button 
+                        className={`px-6 py-2 rounded-lg font-medium ${selectedKbList.length === 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                        disabled={selectedKbList.length === 0}
+                        onClick={() => {
+                            selectedKbList.forEach(kb => removeKb(kb.name));
+                            setSelectedLeftKbIdx(null);
+                        }}
+                    >全部移除</button>
+                </div>
             </div>
             {/* 其它知识库（动态渲染） */}
             <div className="border border-plagt-blue-1 rounded-2xl p-6 bg-white flex flex-col min-h-[400px] max-h-[600px] w-full md:w-1/2">
@@ -91,7 +119,7 @@ const KbSelector = () => {
                         </div>
                     </div>
                 </div>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2 overflow-y-auto px-2" style={{maxHeight: 400}}>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2 overflow-y-auto px-2 pt-2 pb-2" style={{maxHeight: 400}}>
                     {other.length === 0 && activeTag ? (
                         <div className="col-span-2 text-gray-400 text-center py-8">暂无知识库文件</div>
                     ) : (
@@ -118,17 +146,19 @@ const KbSelector = () => {
                     )}
                 </div>
 
-                <button
-                className="mx-auto mt-4 px-8 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 disabled:bg-gray-300"
-                disabled={!selectedOtherKbName}
-                onClick={() => {
-                    const kb = other.find(k => k.name === selectedOtherKbName);
-                    if (kb) addKb(kb);
-                    setSelectedOtherKbName(null);
-                }}
-                >
-                选择
-                </button>
+                <div className="flex justify-center gap-4 mt-4">
+                    <button
+                        className="px-8 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 disabled:bg-gray-300"
+                        disabled={!selectedOtherKbName}
+                        onClick={() => {
+                            const kb = other.find(k => k.name === selectedOtherKbName);
+                            if (kb) addKb(kb);
+                            setSelectedOtherKbName(null);
+                        }}
+                    >
+                        选择
+                    </button>
+                </div>
             </div>
         </div>
     );
