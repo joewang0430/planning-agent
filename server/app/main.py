@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
-from .api import generate
+from .api import generate, base
 
 load_dotenv()
 
@@ -21,8 +21,10 @@ app.add_middleware(
 
 # routers
 app.include_router(generate.generate_router)
+app.include_router(base.base_router, prefix="/api")
 
 # test
 @app.get("/ping")
 async def root():
     return {"message": "PONG! Planning Agent API is running!"}
+    
