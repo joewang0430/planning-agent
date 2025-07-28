@@ -84,5 +84,5 @@ class TestAgent:
 # test
 if __name__ == "__main__":
     tested_agent = ClassificationAgent()
-    answer = tested_agent.classify_title(EXAMPLE_TITLE_2)
+    answer = tested_agent.classify_title("杭州市政府‘十五五’建设的专项规划（2025）")
     print(answer)

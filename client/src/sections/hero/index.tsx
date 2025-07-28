@@ -26,7 +26,7 @@ export default function Hero() {
       />
       <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 w-full justify-center items-center">
         <BaseButtonHome />
-        <PlanningButtonHome title={title} />
+        <PlanningButtonHome title={title} setTitle={setTitle}/>
       </div>
     </div>
   );

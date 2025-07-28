@@ -1,5 +1,15 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
+export const classifyTitle = async(title: string) => {
+    const res = await fetch(`${API_BASE_URL}/api/classify_title`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title }),
+    });
+    if (!res.ok) throw new Error('标题检测失败: generateApi.ts');
+    return await res.json(); // { valid: boolean }
+};
+
 // TOSTRUCT
 export const generateOutline = async(title: string, knowledgeBaseIds?: string[]) => {
     const res = await fetch(`${API_BASE_URL}/api/outline`, {
