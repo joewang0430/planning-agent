@@ -19,7 +19,7 @@ export function KnowledgeBaseProvider({ children }: KnowledgeBaseProviderProps) 
     const [selectedKbList, setSelectedKbList] = useState<KnowledgeBaseFile[]>([]);
 
     const addKb = (kb: KnowledgeBaseFile) => {
-        setSelectedKbList(prev => prev.some(item => item.name === kb.name) ? prev : [...prev, kb]);
+        setSelectedKbList(prev => prev.some(item => item.name === kb.name && item.category === kb.category) ? prev : [...prev, kb]);
     };
 
     const removeKb = (kbName: string) => {

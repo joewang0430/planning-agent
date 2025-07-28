@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import KnowledgeBaseCard from "@/components/kb/KnowledgeBaseCard";
-import { fetchKbList } from "../../api/baseApi";
+import { fetchKbList, deleteKnowledgeBase } from "../../api/baseApi";
 import { KnowledgeBaseCategory } from "@/data/contentTypes";
 import { useKnowledgeBase } from "@/contexts/KnowledgeBaseContext";
 
@@ -58,9 +58,10 @@ const KbSelector = () => {
                         <div key={i}>
                             <KnowledgeBaseCard 
                                 name={kb.name} 
-                                type="db"
+                                type={kb.type === 'db' ? 'db' : 'file'}
                                 status={selectedLeftKbIdx === i ? "selected" : "normal"}
                                 onClick={() => setSelectedLeftKbIdx(i)} 
+                                category={kb.category}
                             />
                         </div>
                     ))}
@@ -69,9 +70,17 @@ const KbSelector = () => {
                     <button 
                         className={`px-6 py-2 rounded-lg font-medium ${selectedLeftKbIdx === null ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
                         disabled={selectedLeftKbIdx === null}
-                        onClick={() => {
+                        onClick={async () => {
                             if (selectedLeftKbIdx !== null) {
-                                removeKb(selectedKbList[selectedLeftKbIdx].name);
+                                const kb = selectedKbList[selectedLeftKbIdx];
+                                if (kb.type === 'upload') {
+                                    try {
+                                        await deleteKnowledgeBase(kb.name);
+                                    } catch (err) {
+                                        console.error('后端文件删除失败', err);
+                                    }
+                                }
+                                removeKb(kb.name);
                                 setSelectedLeftKbIdx(null);
                             }
                         }}
@@ -79,8 +88,17 @@ const KbSelector = () => {
                     <button 
                         className={`px-6 py-2 rounded-lg font-medium ${selectedKbList.length === 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
                         disabled={selectedKbList.length === 0}
-                        onClick={() => {
-                            selectedKbList.forEach(kb => removeKb(kb.name));
+                        onClick={async () => {
+                            for (const kb of selectedKbList) {
+                                if (kb.type === 'upload') {
+                                    try {
+                                        await deleteKnowledgeBase(kb.name);
+                                    } catch (err) {
+                                        console.error('后端文件删除失败', err);
+                                    }
+                                }
+                                removeKb(kb.name);
+                            }
                             setSelectedLeftKbIdx(null);
                         }}
                     >全部移除</button>
@@ -136,6 +154,7 @@ const KbSelector = () => {
                                     name={kb.name} 
                                     type="db" 
                                     status={status}
+                                    category={activeTag ?? undefined}
                                     onClick={() => {
                                         if (status === "added") return;
                                         setSelectedOtherKbName(kb.name);

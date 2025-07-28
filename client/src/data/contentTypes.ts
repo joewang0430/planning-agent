@@ -11,8 +11,9 @@ export type OutlineStruct = OutlineSection[];
 export interface KnowledgeBaseFile {
     name: string;
     type: string;
-}
+    category?: string;
+};
 export interface KnowledgeBaseCategory {
     category: string;
     files: KnowledgeBaseFile[];
-}
+};

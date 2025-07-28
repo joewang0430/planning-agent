@@ -5,11 +5,12 @@ interface KnowledgeBaseCardProps {
   name: string;
   type?: "db" | "file";
   status?: "normal" | "selected" | "added";
+  category?: string;
   onClick?: () => void;
 }
 
-const KnowledgeBaseCard = ({ name, type = "db", status = "normal", onClick }: KnowledgeBaseCardProps) => {
-  let cardClass = "flex flex-row px-4 py-3 rounded-lg shadow-sm border transition cursor-pointer border-gray-200 w-full ";
+const KnowledgeBaseCard = ({ name, type = "db", status = "normal", category, onClick }: KnowledgeBaseCardProps) => {
+  let cardClass = "flex flex-row px-4 py-3 rounded-lg shadow-sm border cursor-pointer border-gray-200 w-full ";
   let iconClass = "";
   let textClass = "text-sm whitespace-pre-line break-words";
 
@@ -55,6 +56,7 @@ const KnowledgeBaseCard = ({ name, type = "db", status = "normal", onClick }: Kn
         >
           {name}
         </span>
+        {/* 不再显示category，只显示名字 */}
       </div>
     </div>
   );
