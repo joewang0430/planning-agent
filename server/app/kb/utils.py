@@ -1,7 +1,15 @@
 import os
+from openai import OpenAI
+from dotenv import load_dotenv
 
-MAX_KB_NUM = 6  # max 6 knowledgebase each generation
-USER_MAX_KB_NUM = 5 # max 5 knowledgebase for user to select
+load_dotenv()
+
+API_KEY = os.getenv("EBD_API_KEY")
+BASE_URL = os.getenv("EBD_BASE_URL")
+MODEL_NAME = os.getenv("EBD_MODEL_NAME")
+
+MAX_KB_NUM = 6  # max 6 kb each generation
+USER_MAX_KB_NUM = 5 # max 5 kb for user to select
 
 KB_DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../kb/data"))
 
@@ -47,6 +55,23 @@ class KnowledgeBase:
                     "files": new_files
                 })
         return new_lst
+    
+    @staticmethod
+    def get_embedding(text: str):
+        """
+        calling OpenAI embedding API, return embedding vectors (list of float).
+        """
+        client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
+        try:
+            response = client.embeddings.create(
+                model=MODEL_NAME,
+                input=[text],
+                encoding_format="float"
+            )
+            return response.data[0].embedding
+        except Exception as e:
+            print(f"[错误] 获取 embedding 失败: {e}")
+            return None
     
 
 # test functionality

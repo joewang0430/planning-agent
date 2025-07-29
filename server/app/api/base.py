@@ -3,7 +3,7 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 import shutil
 import os
-from ..utils.kb import KnowledgeBase
+from ..kb.utils import KnowledgeBase
 
 base_router = APIRouter()
 

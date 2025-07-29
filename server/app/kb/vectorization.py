@@ -10,6 +10,7 @@ load_dotenv()
 
 DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "data"))
 UPLOADS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "vector_data"))
+APP_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 
 API_KEY = os.getenv("EBD_API_KEY")
@@ -76,10 +77,12 @@ for category in os.listdir(DATA_DIR):
             # print(f"\n解析内容: {text}") # uncmt iff testing
             if text.strip():
                 texts.append(text)
+                relative_path = os.path.relpath(file_path, APP_ROOT)
                 file_infos.append({
                     "category": category,
                     "name": fname,
-                    "path": file_path
+                    "path": f"/{relative_path}",
+                    "text": text
                 })
         except Exception as e:
             print(f"处理文件出错: {file_path}，原因: {e}")
@@ -114,43 +117,43 @@ else:
 
 print(f"共收集到 {len(texts)} 条文本，准备分批向量化...")
 
-# 2. 分批调用 embedding 接口
-all_embeddings = []
-for i in tqdm(range(0, len(texts), BATCH_SIZE), desc="Batch embedding"):
-    batch_texts = texts[i:i+BATCH_SIZE]
-    batch_infos = file_infos[i:i+BATCH_SIZE]
-    valid_texts = []
-    valid_infos = []
-    for t, info in zip(batch_texts, batch_infos):
-        if isinstance(t, str) and 1 <= len(t) <= 8192:
-            valid_texts.append(t)
-            valid_infos.append(info)
-        else:
-            print(f"跳过不合法文本: {info['name']} ({len(t) if isinstance(t, str) else 'N/A'} chars) {info['path']}")
-    if not valid_texts:
-        continue
-    try:
-        completion = client.embeddings.create(
-            model=MODEL_NAME,
-            input=valid_texts,
-            encoding_format="float"
-        )
-        # 兼容不同返回格式
-        if hasattr(completion, "data"):
-            batch_embeddings = [item.embedding for item in completion.data]
-        else:
-            batch_embeddings = [item["embedding"] for item in completion["data"]]
-        all_embeddings.extend(batch_embeddings)
-    except Exception as e:
-        print("embedding请求异常，当前batch文件如下：")
-        for info in valid_infos:
-            print(f"  {info['name']} | {info['path']}")
-        print(f"异常信息: {e}")
-        raise
+# # 2. 分批调用 embedding 接口
+# all_embeddings = []
+# for i in tqdm(range(0, len(texts), BATCH_SIZE), desc="Batch embedding"):
+#     batch_texts = texts[i:i+BATCH_SIZE]
+#     batch_infos = file_infos[i:i+BATCH_SIZE]
+#     valid_texts = []
+#     valid_infos = []
+#     for t, info in zip(batch_texts, batch_infos):
+#         if isinstance(t, str) and 1 <= len(t) <= 8192:
+#             valid_texts.append(t)
+#             valid_infos.append(info)
+#         else:
+#             print(f"跳过不合法文本: {info['name']} ({len(t) if isinstance(t, str) else 'N/A'} chars) {info['path']}")
+#     if not valid_texts:
+#         continue
+#     try:
+#         completion = client.embeddings.create(
+#             model=MODEL_NAME,
+#             input=valid_texts,
+#             encoding_format="float"
+#         )
+#         # 兼容不同返回格式
+#         if hasattr(completion, "data"):
+#             batch_embeddings = [item.embedding for item in completion.data]
+#         else:
+#             batch_embeddings = [item["embedding"] for item in completion["data"]]
+#         all_embeddings.extend(batch_embeddings)
+#     except Exception as e:
+#         print("embedding请求异常，当前batch文件如下：")
+#         for info in valid_infos:
+#             print(f"  {info['name']} | {info['path']}")
+#         print(f"异常信息: {e}")
+#         raise
 
-# 3. 保存向量
-np.save(os.path.join(UPLOADS_DIR, "kb_vectors.npy"), np.array(all_embeddings, dtype=np.float32))
-print(f"已保存 {len(all_embeddings)} 条知识库向量到 {UPLOADS_DIR}（text-embedding-v4，batch处理）")
+# # 3. 保存向量
+# np.save(os.path.join(UPLOADS_DIR, "kb_vectors.npy"), np.array(all_embeddings, dtype=np.float32))
+# print(f"已保存 {len(all_embeddings)} 条知识库向量到 {UPLOADS_DIR}（text-embedding-v4，batch处理）")
 
 # 4. 最后保存 file_infos
 with open(os.path.join(UPLOADS_DIR, "kb_meta.json"), "w", encoding="utf-8") as f:
