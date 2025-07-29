@@ -3,6 +3,7 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 import shutil
 import os
+from ..utils.kb import KnowledgeBase
 
 base_router = APIRouter()
 
@@ -20,6 +21,7 @@ async def upload_kb_file(file: UploadFile = File(...)):
         shutil.copyfileobj(file.file, f)
     return {"success": True, "filename": file.filename}
 
+
 # delete uploaded kb file
 @base_router.post("/kb/delete")
 async def delete_kb_file(request: Request):
@@ -32,9 +34,10 @@ async def delete_kb_file(request: Request):
     else:
         return JSONResponse(status_code=404, content={"success": False, "error": "File not found", "filename": filename})
 
+
 # generate JSON of kb list, for front-end rendering
 @base_router.get("/kb/list")
-def get_kb_list():
+def router_get_kb_list():
     # print("get_kb_list 路由被调用") 
     """
     Fintch scans the knowledge base directory and 
@@ -50,14 +53,4 @@ def get_kb_list():
       ...
     ]
     """
-    kb_list = []
-    # traverse category repos
-    for category in os.listdir(KB_DATA_DIR):
-        category_path = os.path.join(KB_DATA_DIR, category)
-        if os.path.isdir(category_path):
-            files = []
-            for fname in os.listdir(category_path):
-                if fname.endswith(".xml"):
-                    files.append({"name": fname, "type": "file"})
-            kb_list.append({"category": category, "files": files})
-    return kb_list
+    return KnowledgeBase.get_kb_list()

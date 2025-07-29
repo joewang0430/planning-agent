@@ -24,6 +24,26 @@ class PlanningState(TypedDict):
     outline: str 
     content: str 
 
+
+# AI operates knowledge base
+class KbAgent:
+    def __init__(self):
+        self.client = OpenAI(
+            api_key=os.getenv("API_KEY"), 
+            base_url=os.getenv("BASE_URL"), 
+        )
+        self.model_name = os.getenv("MODEL_NAME", DEFAULT_MODEL_NAME)
+    
+    def select_kb(self, title: str, lst: str):
+        messages = Prompt.get_kb_selection_prompt(title, lst)
+        completion = self.client.chat.completions.create(
+            model=self.model_name,
+            messages=messages,
+        )
+        classification = completion.choices[0].message.content
+        return classification
+
+
 # check if the title is valid
 class ClassificationAgent:
     def __init__(self):
@@ -50,7 +70,7 @@ class OutlineAgent:
             api_key=os.getenv("API_KEY"), 
             base_url=os.getenv("BASE_URL"), 
         )
-        self.model_name = os.getenv("MODEL_NAME", DEFAULT_MODEL_NAME) # default: moonshot
+        self.model_name = os.getenv("MODEL_NAME", DEFAULT_MODEL_NAME)
 
     def generate_outline(self, title: str):
         messages = Prompt.get_outline_prompt(title)
