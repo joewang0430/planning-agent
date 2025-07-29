@@ -56,23 +56,6 @@ class KnowledgeBase:
                 })
         return new_lst
     
-    @staticmethod
-    def get_embedding(text: str):
-        """
-        calling OpenAI embedding API, return embedding vectors (list of float).
-        """
-        client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
-        try:
-            response = client.embeddings.create(
-                model=MODEL_NAME,
-                input=[text],
-                encoding_format="float"
-            )
-            return response.data[0].embedding
-        except Exception as e:
-            print(f"[错误] 获取 embedding 失败: {e}")
-            return None
-    
 
 # test functionality
 if __name__ == "__main__":

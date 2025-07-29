@@ -82,7 +82,8 @@ def import_to_chroma():
         batch_ids = ids[i:i+BATCH_SIZE]
         batch_embeddings = embeddings_list[i:i+BATCH_SIZE]
         batch_metadata = metadata[i:i+BATCH_SIZE]
-        # 新增：提取每条的原文内容，假设元数据有'text'字段，否则为空字符串
+        # Extract the original content of each item, assuming the metadata 
+        # has a 'text' field; otherwise, it is an empty string
         batch_documents = [m.get("text", "") for m in batch_metadata]
         try:
             collection.add(

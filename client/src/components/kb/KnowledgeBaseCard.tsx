@@ -56,7 +56,6 @@ const KnowledgeBaseCard = ({ name, type = "db", status = "normal", category, onC
         >
           {name}
         </span>
-        {/* 不再显示category，只显示名字 */}
       </div>
     </div>
   );

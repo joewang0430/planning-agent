@@ -25,6 +25,31 @@ class PlanningState(TypedDict):
     content: str 
 
 
+# class for embedding
+class EmbeddingAgent:
+    def __init__(self):
+        self.client = OpenAI(
+            api_key=os.getenv("EBD_API_KEY"), 
+            base_url=os.getenv("EBD_BASE_URL"), 
+        )
+        self.model_name = os.getenv("EBD_MODEL_NAME")
+    
+    def get_embedding(self, text: str):
+        """
+        generate embedding for text
+        """
+        try:
+            response = self.client.embeddings.create(
+                model=self.model_name,
+                input=[text],
+                encoding_format="float"
+            )
+            return response.data[0].embedding
+        except Exception as e:
+            print(f"[错误] 获取 embedding 失败: {e}")
+            return None
+
+
 # AI operates knowledge base
 class KbAgent:
     def __init__(self):

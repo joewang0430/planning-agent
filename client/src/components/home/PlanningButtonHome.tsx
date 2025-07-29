@@ -29,7 +29,7 @@ const PlanningButtonHome = ({ title, setTitle }: PlanningButtonHomeProps) => {
                 router.push(`/plan?title=${encodeURIComponent(title)}`);
             } else {
                 setError('标题无意义或不具体，请重新输入');
-                setTitle(''); // 清空输入框
+                setTitle(''); // clear imput bar
             }
         } catch {
             setError('标题检测失败，请稍后重试');

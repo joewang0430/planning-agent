@@ -33,7 +33,7 @@ const KnowledgeBase = () => {
                   await uploadKnowledgeBase(file);
                   addKb({ name: file.name, type: 'upload', category: '上传文件' });
                 } catch (err) {
-                  // TODO：错误处理
+                  // TODO：err handling
                   console.error('文件上传失败', err);
                 }
               });
