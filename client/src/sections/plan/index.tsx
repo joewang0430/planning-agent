@@ -6,12 +6,15 @@ import { generateOutline } from '../../api/generateApi';
 import { GenerateOutlineResponse } from "@/data/generateTypes";
 import RightContent from "@/components/plan/RightContent";
 import LeftContent from "@/components/plan/LeftContent";
+import { useContext } from "react";
+import { useKnowledgeBase } from "@/contexts/KnowledgeBaseContext";
 
 const Plan = () => {
     const searchParams = useSearchParams();
     const title = searchParams.get('title') || '';
     const [data, setData] = useState<GenerateOutlineResponse | null>(null);
     const [loading, setLoading] = useState(false);
+    const { selectedKbList } = useKnowledgeBase();
 
     // Segmentation ratio status
     const [leftWidth, setLeftWidth] = useState(60); // default left 60%
@@ -21,7 +24,7 @@ const Plan = () => {
     useEffect(() => {
         if (title) {
             setLoading(true);
-            generateOutline(title)
+            generateOutline(title, selectedKbList)
                 .then(res => {
                     setData(res);
                     setLoading(false);

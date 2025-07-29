@@ -1,3 +1,5 @@
+import { KnowledgeBaseFile } from "@/data/contentTypes";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const classifyTitle = async(title: string) => {
@@ -11,7 +13,10 @@ export const classifyTitle = async(title: string) => {
 };
 
 // TOSTRUCT
-export const generateOutline = async(title: string, knowledgeBaseIds?: string[]) => {
+export const generateOutline = async(
+    title: string,
+    selectedKbList: KnowledgeBaseFile[]
+) => {
     const res = await fetch(`${API_BASE_URL}/api/outline`, {
         method: 'POST',
         headers: {
@@ -19,13 +24,14 @@ export const generateOutline = async(title: string, knowledgeBaseIds?: string[])
         },
         body: JSON.stringify({
             title,
-            // knowledgeBaseIds,   // user locked knowledge base
+            selectedKbList, // directy convey context select knowledgebase
         }),
     });
     if (!res.ok) throw new Error('生成大纲失败: generateApi.ts');
     return await res.json();
 };
 
+// TOSTRUCT
 export const generateContent = async(
     title: string,
     outline: string,

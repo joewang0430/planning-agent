@@ -16,6 +16,30 @@ class Prompt:
         ]
     
     @staticmethod
+    def get_kb_selection_prompt(title: str, kb_list_json: str, num: int = 3) -> list[dict]:
+        return [
+            {
+                "role": "system",
+                "content": (
+                    "你是一个政策规划领域的智能助手，负责根据用户输入的专项规划标题，从给定的知识库列表中筛选出最相关的知识库。"
+                )
+            },
+            {
+                "role": "user",
+                "content": (
+                    f"专项规划标题如下：\n"
+                    f"{title}\n\n"
+                    f"可选知识库列表（JSON 格式）：\n"
+                    f"{kb_list_json}\n\n"
+                    f"请你从上述知识库列表中，结合标题内容，选择最相关的 {num} 个知识库（可以跨分类选择），"
+                    f"并以相同的 JSON 格式返回你选择的知识库列表。"
+                    "如果相关知识库不足 {num} 个，则只返回你认为相关的全部知识库。"
+                    "请严格按照原有 JSON 格式输出，不要输出任何解释或多余内容。"
+                )
+            }
+        ]
+    
+    @staticmethod
     def get_outline_prompt(title: str) -> list[dict]:
         return [
             {"role": "system", "content": SYSTEM_PROMPT},

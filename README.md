@@ -23,6 +23,7 @@ Create a `.env.local` file in the `client` folder:
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
+
 ## 2b. Configure Backend Environment Variables
 
 Create a `.env` file in the `server` folder and add your AI API Key, url, and model name:
@@ -32,7 +33,48 @@ API_KEY=your_api_key_here
 BASE_URL=https:your-url-here
 MODEL_NAME=your_model_name_here
 FRONTEND_URL=http://localhost:3000
+
+# For knowledge base vectorization (embedding)
+EBD_API_KEY=your_embedding_api_key
+EBD_BASE_URL=https://your-embedding-api-url
+EBD_MODEL_NAME=your_embedding_model_name
 ```
+
+---
+
+## 2c. Initialize Knowledge Base and Run Vectorization
+
+1. **Prepare your knowledge base files**
+   - Place your XML knowledge files in the `server/app/kb/data` directory, organized by category if needed.
+   - Example structure:
+     ```
+     server/app/kb/data/
+       ├── 01_组织机构/
+       │     ├── 文件1.xml
+       │     └── 文件2.xml
+       └── 02_政策法规/
+             └── 文件3.xml
+     ```
+
+2. **Configure embedding environment variables**
+   - In your `server/.env` file, ensure you have:
+     ```
+     EBD_API_KEY=your_embedding_api_key
+     EBD_BASE_URL=https://your-embedding-api-url
+     EBD_MODEL_NAME=your_embedding_model_name
+     ```
+
+3. **Run the vectorization script**
+   - In the `server/app/kb` directory, run:
+     ```bash
+     python vectorization.py
+     ```
+   - This will parse your XML files, generate embeddings, and save the results to `server/app/kb/vector_data/`.
+   - Output files:
+     - `kb_vectors.npy`: the embedding vectors
+     - `kb_meta.json`: metadata mapping each vector to its source file
+
+---
 
 ## 3. Run the Project in Docker
 

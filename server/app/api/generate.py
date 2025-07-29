@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import json
 from ..ai.agent import ClassificationAgent, OutlineAgent
 
+
 generate_router = APIRouter()
 
 
@@ -20,6 +21,7 @@ class GenerateOutlineReturn(BaseModel):
     success: bool
     title: str
     outline: str
+
 
 classify_agent = ClassificationAgent()
 outline_agent = OutlineAgent()

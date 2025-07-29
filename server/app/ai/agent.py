@@ -34,7 +34,7 @@ class KbAgent:
         )
         self.model_name = os.getenv("MODEL_NAME", DEFAULT_MODEL_NAME)
     
-    def select_kb(self, title: str, lst: str):
+    def select_kb(self, title: str, lst: str, num: int):
         messages = Prompt.get_kb_selection_prompt(title, lst)
         completion = self.client.chat.completions.create(
             model=self.model_name,
