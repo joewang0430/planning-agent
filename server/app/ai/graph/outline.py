@@ -77,12 +77,12 @@ def node_generate_outline(state: OutlineState):
     title = state.title
     selected_bfs = state.selectedKbList
 
-    # Read and integrate the contents of all files
-    context_block = []
-    kb.get_content_from_bf(selected_bfs)
+    # get contents of all selected kb, and use it to generate ai abstract
+    selected_kb_contents = kb.get_all_kb_content(selected_bfs)
+    selected_kb_abstract = kb_agent.abstract_kb_lst(title, selected_kb_contents)
 
     # use prompt and get outline result
-    final_outline = outline_agent.generate_outline(title)
+    final_outline = outline_agent.generate_outline(title, selected_kb_abstract)
 
     return {"outline": final_outline}
 

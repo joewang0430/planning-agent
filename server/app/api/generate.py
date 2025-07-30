@@ -26,7 +26,7 @@ async def router_classify_title(req: ClassifyTitleRequest):
         result = classify_agent.classify_title(req.title)
         return ClassifyTitleReturn(valid=(result.strip().lower() == "true"))    #return { valid: True/False }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"标题检测失败: {str(e)}  (from router_generate_outline, generate.py)")
+        raise HTTPException(status_code=500, detail=f"标题检测失败: {str(e)}  (from router_classify_title, generate.py)")
     
 
 @generate_router.post("/api/outline")

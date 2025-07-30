@@ -5,6 +5,7 @@ from typing import TypedDict, List
 import os
 from dotenv import load_dotenv
 from .prompt import Prompt
+from ..api.schemas import KnowledgeBaseFile
 
 load_dotenv()
 DEFAULT_MODEL_NAME = "moonshot-v1-8k"
@@ -80,6 +81,26 @@ class KbAgent:
         except Exception as e:
             print(f"[错误] 调用AI选择知识库时出错: {e}")
             return []
+        
+    def abstract_kb_lst(self, title: str, content_lst: List[str]) -> str:
+        """
+        Summarizes a list of knowledge base content based on a title.
+        """
+        if not content_lst:
+            return ""
+
+        messages = Prompt.get_abstract_prompt(title, content_lst)
+        try:
+            completion = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=messages,
+            )
+            abstract = completion.choices[0].message.content
+            print(f"----AI整理出来的知识库大纲---- \n{abstract}")
+            return abstract.strip()
+        except Exception as e:
+            print(f"[错误] 调用AI生成摘要时出错: {e}")
+            return ""
 
 
 # check if the title is valid
@@ -110,14 +131,42 @@ class OutlineAgent:
         )
         self.model_name = os.getenv("MODEL_NAME", DEFAULT_MODEL_NAME)
 
-    def generate_outline(self, title: str):
-        messages = Prompt.get_outline_prompt(title)
+    def generate_outline(self, title: str, kb_abstract: str):
+        messages = Prompt.get_outline_prompt(title, kb_abstract)
         completion = self.client.chat.completions.create(
             model=self.model_name,
             messages=messages,
+            # response_format={"type": "json_object"},
         )
         outline = completion.choices[0].message.content
         return outline
+
+    # def generate_outline(self, title: str, kb_abstract: str):
+    #     messages = Prompt.get_outline_prompt(title, kb_abstract)
+    #     try:
+    #         completion = self.client.chat.completions.create(
+    #             model=self.model_name,
+    #             messages=messages,
+    #             response_format={"type": "json_object"},
+    #         )
+    #         outline_str = completion.choices[0].message.content
+            
+    #         parsed_json = json.loads(outline_str)
+    #         print("--- AI返回并解析后的JSON对象 ---")
+    #         print(parsed_json)
+
+    #         # Robustness fix: If the AI returns a single object instead of a list, wrap it in a list.
+    #         if isinstance(parsed_json, dict):
+    #             return [parsed_json]
+
+    #         return parsed_json
+
+    #     except json.JSONDecodeError:
+    #         print(f"[错误] AI返回的大纲不是有效的JSON格式: {outline_str}")
+    #         return []
+    #     except Exception as e:
+    #         print(f"[错误] 调用AI生成大纲时出错: {e}")
+    #         return []
 
 
 # test if api works

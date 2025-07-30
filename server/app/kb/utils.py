@@ -3,6 +3,9 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from typing import List
 from ..api.schemas import KnowledgeBaseFile
+import chromadb
+from .import_to_chromadb import CHROMA_PERSIST_DIR, COLLECTION_NAME
+
 
 load_dotenv()
 
@@ -14,6 +17,8 @@ MAX_KB_NUM = 6  # max 6 kb each generation
 USER_MAX_KB_NUM = 5 # max 5 kb for user to select
 
 KB_DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../kb/data"))
+
+MAX_CHAR_NUM = 950
 
 class KnowledgeBase:
     @staticmethod
@@ -115,12 +120,61 @@ class KnowledgeBase:
         """
         return [KnowledgeBase.id_to_bf(id_str) for id_str in id_lst]
     
-    @staticmethod # TODO: change it later
-    def get_content_from_bf(bf: KnowledgeBaseFile) -> str:
+    @staticmethod
+    def get_all_kb_content(bf_lst: List[KnowledgeBaseFile]) -> List[str]:
         """
-        Reads and returns the content of a knowledge base file.
+        Retrieves the content for a list of KnowledgeBaseFile objects.
+        - For 'db' type, it fetches content from ChromaDB by ID.
+        - For 'file' type, it reads the content from the local file system.
+        - All content is truncated to MAX_CHAR_NUM characters.
         """
-        return ""
+        contents = []
+        
+        # Initialize ChromaDB client
+        try:
+            db_client = chromadb.PersistentClient(path=CHROMA_PERSIST_DIR)
+            collection = db_client.get_collection(name=COLLECTION_NAME)
+        except Exception as e:
+            print(f"Error initializing ChromaDB: {e}")
+            # Return empty content for all if DB fails
+            return [""] * len(bf_lst)
+
+        for bf in bf_lst:
+            content = ""
+            try:
+                if bf.type == 'db':
+                    doc_id = KnowledgeBase.bf_to_id(bf)
+                    if doc_id:
+                        # Fetch from ChromaDB
+                        result = collection.get(ids=[doc_id], include=["documents"])
+                        if result and result.get('documents'):
+                            content = result['documents'][0]
+                        else:
+                            print(f"Warning: Document with ID '{doc_id}' not found in ChromaDB.")
+                
+                elif bf.type == 'file':
+                    # Construct file path and read from file system
+                    if bf.category:
+                        file_path = os.path.join(KB_DATA_DIR, bf.category, bf.name)
+                        if os.path.exists(file_path):
+                            with open(file_path, 'r', encoding='utf-8') as f:
+                                content = f.read()
+                        else:
+                            print(f"Warning: File not found at '{file_path}'.")
+                    else:
+                        print(f"Warning: Category is missing for file '{bf.name}'. Cannot determine file path.")
+
+            except Exception as e:
+                print(f"Error processing '{bf.name}': {e}")
+                content = "" # Ensure content is empty on error
+
+            # Truncate content if it exceeds the maximum length
+            if len(content) > MAX_CHAR_NUM:
+                content = content[:MAX_CHAR_NUM]
+            
+            contents.append(content)
+            
+        return contents
 
 # test functionality
 if __name__ == "__main__":
