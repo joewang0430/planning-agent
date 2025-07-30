@@ -17,6 +17,7 @@ export const generateOutline = async(
     title: string,
     selectedKbList: KnowledgeBaseFile[]
 ) => {
+    console.log("api called once")
     const res = await fetch(`${API_BASE_URL}/api/outline`, {
         method: 'POST',
         headers: {

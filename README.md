@@ -121,6 +121,17 @@ docker-compose up --build
   docker-compose up
   ```
 
+- **API or `useEffect` Called Twice in Development:**
+  If you notice that API calls or `useEffect` hooks are running twice when a component mounts, this is **expected behavior** in the Next.js development environment. It is caused by React's `StrictMode`, which intentionally mounts, unmounts, and re-mounts components to help you find bugs related to side-effects. This behavior **will not occur in the production build**. If you need to disable it for specific debugging purposes (not recommended), you can do so in `client/next.config.js`:
+  ```javascript
+  /** @type {import('next').NextConfig} */
+  const nextConfig = {
+    reactStrictMode: false,
+  };
+
+  module.exports = nextConfig;
+  ```
+
 ---
 
 **You do NOT need to install Node.js or Python locally. All code runs inside Docker containers.**

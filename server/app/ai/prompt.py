@@ -17,14 +17,13 @@ class Prompt:
     
     @staticmethod
     def get_kb_selection_prompt(title: str, id_list: list[str], num: int = 3) -> list[dict]:
-        # Convert the ID list to a formatted string for clear display in the prompt
         id_list_str = "\n".join(id_list)
         return [
             {
                 "role": "system",
                 "content": (
                     "你是一个精准的政策研究助手。你的任务是根据用户提供的专项规划标题，从一个候选知识库ID列表中，筛选出与标题内容最相关的ID。"
-                    "你返回的结果必须是一个JSON数组，其中只包含你选中的ID字符串。"
+                    "你返回的结果必须是一个JSON对象，格式为：{\"selected_ids\": [\"id1.xml\", \"id2.xml\", ...]}。"
                 )
             },
             {
@@ -39,8 +38,8 @@ class Prompt:
                     f"```\n\n"
                     f"请遵循以下规则：\n"
                     f"1. 你的选择必须完全基于相关性。如果候选列表中没有足够相关的ID，你可以选择少于 {num} 个，极端情况下可以返回一个空列表[]。\n"
-                    f"2. 返回的结果必须是一个JSON格式的字符串数组，例如：[\"id1.xml\", \"id2.xml\"]。\n"
-                    f"3. 除了这个JSON数组，不要包含任何解释、注释或其他多余的文字。"
+                    f"2. 返回的结果必须是一个JSON对象，其 'selected_ids' 键对应一个字符串数组。例如：{{\"selected_ids\": [\"id1.xml\", \"id2.xml\"]}}。\n"
+                    f"3. 除了这个JSON对象，不要包含任何解释、注释或其他多余的文字。"
                 )
             }
         ]

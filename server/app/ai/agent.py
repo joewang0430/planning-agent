@@ -69,8 +69,10 @@ class KbAgent:
                 response_format={"type": "json_object"},
             )
             selection_str = completion.choices[0].message.content
-            # The response is a JSON string, therefore need to parse it.
-            selected_ids = json.loads(selection_str)
+            # parse JSON 
+            selection_obj = json.loads(selection_str)
+            # from 'selected_ids' keys, safely extract array
+            selected_ids = selection_obj.get("selected_ids", [])
             return selected_ids
         except json.JSONDecodeError:
             print(f"[错误] AI返回的知识库选择不是有效的JSON格式: {selection_str}")
