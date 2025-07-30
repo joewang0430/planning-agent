@@ -31,7 +31,7 @@ const KnowledgeBase = () => {
               Array.from(files).forEach(async file => {
                 try {
                   await uploadKnowledgeBase(file);
-                  addKb({ name: file.name, type: 'upload', category: '上传文件' });
+                  addKb({ name: file.name, type: 'file'});
                 } catch (err) {
                   // TODO：err handling
                   console.error('文件上传失败', err);

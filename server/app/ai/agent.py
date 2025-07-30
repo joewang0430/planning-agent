@@ -1,6 +1,7 @@
+import json
 from langgraph.graph import StateGraph
 from openai import OpenAI
-from typing import TypedDict
+from typing import TypedDict, List
 import os
 from dotenv import load_dotenv
 from .prompt import Prompt
@@ -18,11 +19,11 @@ EXAMPLE_TITLE_2 = "杭州市城市轨道交通网络‘十五五’发展专项�
 # )
 
 # define state struct for langgraph
-class PlanningState(TypedDict):
-    title: str
-    # policy_research: str 
-    outline: str 
-    content: str 
+# class PlanningState(TypedDict):
+#     title: str
+#     # policy_research: str 
+#     outline: str 
+#     content: str 
 
 
 # class for embedding
@@ -59,14 +60,24 @@ class KbAgent:
         )
         self.model_name = os.getenv("MODEL_NAME", DEFAULT_MODEL_NAME)
     
-    def select_kb(self, title: str, lst: str, num: int):
-        messages = Prompt.get_kb_selection_prompt(title, lst)
-        completion = self.client.chat.completions.create(
-            model=self.model_name,
-            messages=messages,
-        )
-        classification = completion.choices[0].message.content
-        return classification
+    def select_kb(self, title: str, lst: List[str], num: int) -> List[str]:
+        messages = Prompt.get_kb_selection_prompt(title, lst, num)
+        try:
+            completion = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=messages,
+                response_format={"type": "json_object"},
+            )
+            selection_str = completion.choices[0].message.content
+            # The response is a JSON string, therefore need to parse it.
+            selected_ids = json.loads(selection_str)
+            return selected_ids
+        except json.JSONDecodeError:
+            print(f"[错误] AI返回的知识库选择不是有效的JSON格式: {selection_str}")
+            return []
+        except Exception as e:
+            print(f"[错误] 调用AI选择知识库时出错: {e}")
+            return []
 
 
 # check if the title is valid

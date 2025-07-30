@@ -1,3 +1,4 @@
+export type KBFileType = "db" | "file";
 
 // outline
 type OutlineSection = {
@@ -10,7 +11,7 @@ export type OutlineStruct = OutlineSection[];
 // kb list
 export interface KnowledgeBaseFile {
     name: string;
-    type: string;
+    type: KBFileType;   // if type==db: then is .xml data; if type==file then is uploaded data
     category?: string;
 };
 export interface KnowledgeBaseCategory {

@@ -8,23 +8,22 @@ import { useKnowledgeBase } from "@/contexts/KnowledgeBaseContext";
 
 
 const KbSelector = () => {
-    // 后端返回的知识库分类和文件
+    // The knowledge base classification and files returned by the back end
     const [kbList, setKbList] = useState<KnowledgeBaseCategory[]>([]);
-    // 当前选中的标签（分类）
+    // The currently selected label (category
     const [activeTag, setActiveTag] = useState<string | null>(null);
-    // 搜索框内容
+    // Search box content
     const [search, setSearch] = useState("");
     // kb context operation, used for global kb management
     const { selectedKbList, addKb, removeKb } = useKnowledgeBase();
     // selected kb in right part: 所有知识库, currently, it only support select one once
     const [selectedOtherKbName, setSelectedOtherKbName] = useState<string | null>();
-    // 左侧已调用知识库选中
+    // The knowledge base has been selected for invocation on the left
     const [selectedLeftKbIdx, setSelectedLeftKbIdx] = useState<number | null>(null);
 
     useEffect(() => {
         fetchKbList().then(list => {
             setKbList(list);
-            // 默认选中“01_组织机构”
             if (list.some((cat: KnowledgeBaseCategory) => cat.category === "01_组织机构")) {
                 setActiveTag("01_组织机构");
             } else if (list.length > 0) {
@@ -33,15 +32,15 @@ const KbSelector = () => {
         }).catch(console.error);
     }, []);
 
-    // tags 就是后端返回的所有分类
+    // tags are all the categories returned by the back end
     const tags = kbList.map(cat => cat.category);
 
-    // 当前展示的其它知识库（即选中分类下的所有文件，支持搜索过滤）
+    // The other knowledge bases currently displayed (i.e., all files under the selected category, supporting search filtering)
     const other = React.useMemo(() => {
         if (!activeTag) return [];
         const cat = kbList.find(c => c.category === activeTag);
         if (!cat) return [];
-        // 搜索过滤
+        // search filter
         if (search.trim()) {
             return cat.files.filter(file => file.name.toLowerCase().includes(search.trim().toLowerCase()));
         }
@@ -50,7 +49,7 @@ const KbSelector = () => {
 
     return (
         <div className="flex flex-col md:flex-row gap-6 w-full h-full">
-            {/* 已调用知识库（mock） */}
+            {/* Left: 已调用知识库 */}
             <div className="border border-plagt-blue-1 rounded-2xl p-6 bg-white flex flex-col min-h-[400px] max-h-[600px] w-full md:w-1/2">
                 <div className="text-center text-lg font-semibold text-blue-700 mb-4">已调用知识库</div>
                 <div className="grid grid-cols-2 gap-x-4 gap-y-2 overflow-y-auto pt-2 pb-2 px-2" style={{maxHeight: 400}}>
@@ -73,7 +72,7 @@ const KbSelector = () => {
                         onClick={async () => {
                             if (selectedLeftKbIdx !== null) {
                                 const kb = selectedKbList[selectedLeftKbIdx];
-                                if (kb.type === 'upload') {
+                                if (kb.type === 'file') {
                                     try {
                                         await deleteKnowledgeBase(kb.name);
                                     } catch (err) {
@@ -90,7 +89,7 @@ const KbSelector = () => {
                         disabled={selectedKbList.length === 0}
                         onClick={async () => {
                             for (const kb of selectedKbList) {
-                                if (kb.type === 'upload') {
+                                if (kb.type === 'file') {
                                     try {
                                         await deleteKnowledgeBase(kb.name);
                                     } catch (err) {
@@ -104,7 +103,7 @@ const KbSelector = () => {
                     >全部移除</button>
                 </div>
             </div>
-            {/* 其它知识库（动态渲染） */}
+            {/* Rigut: 其它知识库 */}
             <div className="border border-plagt-blue-1 rounded-2xl p-6 bg-white flex flex-col min-h-[400px] max-h-[600px] w-full md:w-1/2">
                 <div className="text-center text-lg font-semibold text-blue-700 mb-4">所有知识库</div>
                 <div className="mb-2">
@@ -128,7 +127,7 @@ const KbSelector = () => {
                                     className={`px-3 py-1 rounded-full border text-xs ${activeTag === tag ? "bg-blue-100 border-blue-400 text-blue-700" : "bg-gray-100 border-gray-300 text-gray-600"}`}
                                     onClick={() => {
                                         setActiveTag(tag);
-                                        setSearch(""); // 切换标签时清空搜索
+                                        setSearch(""); // clear the search when switching tags
                                     }}
                                 >
                                     {tag}

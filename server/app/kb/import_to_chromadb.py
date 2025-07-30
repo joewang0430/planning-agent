@@ -73,7 +73,7 @@ def import_to_chroma():
 
     # Prepare the data and import it in batches
     # ChromaDB requires that the ID be of string type
-    ids = [f"doc_{i}" for i in range(len(metadata))]
+    ids = [f"{m['category']}/{m['name']}" for m in metadata]
     # ChromaDB requires embeddings is list of lists
     embeddings_list = vectors.tolist()
 

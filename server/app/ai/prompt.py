@@ -16,25 +16,31 @@ class Prompt:
         ]
     
     @staticmethod
-    def get_kb_selection_prompt(title: str, kb_list_json: str, num: int = 3) -> list[dict]:
+    def get_kb_selection_prompt(title: str, id_list: list[str], num: int = 3) -> list[dict]:
+        # Convert the ID list to a formatted string for clear display in the prompt
+        id_list_str = "\n".join(id_list)
         return [
             {
                 "role": "system",
                 "content": (
-                    "你是一个政策规划领域的智能助手，负责根据用户输入的专项规划标题，从给定的知识库列表中筛选出最相关的知识库。"
+                    "你是一个精准的政策研究助手。你的任务是根据用户提供的专项规划标题，从一个候选知识库ID列表中，筛选出与标题内容最相关的ID。"
+                    "你返回的结果必须是一个JSON数组，其中只包含你选中的ID字符串。"
                 )
             },
             {
                 "role": "user",
                 "content": (
-                    f"专项规划标题如下：\n"
-                    f"{title}\n\n"
-                    f"可选知识库列表（JSON 格式）：\n"
-                    f"{kb_list_json}\n\n"
-                    f"请你从上述知识库列表中，结合标题内容，选择最相关的 {num} 个知识库（可以跨分类选择），"
-                    f"并以相同的 JSON 格式返回你选择的知识库列表。"
-                    "如果相关知识库不足 {num} 个，则只返回你认为相关的全部知识库。"
-                    "请严格按照原有 JSON 格式输出，不要输出任何解释或多余内容。"
+                    f"我正在研究以下专项规划标题：\n"
+                    f"“{title}”\n\n"
+                    f"请从下面这个候选知识库ID列表中，仔细评估每个ID中'/'后面的文件名与上述标题的关联度，并挑选出最多 {num} 个最相关的ID。\n"
+                    f"候选知识库ID列表：\n"
+                    f"```\n"
+                    f"{id_list_str}\n"
+                    f"```\n\n"
+                    f"请遵循以下规则：\n"
+                    f"1. 你的选择必须完全基于相关性。如果候选列表中没有足够相关的ID，你可以选择少于 {num} 个，极端情况下可以返回一个空列表[]。\n"
+                    f"2. 返回的结果必须是一个JSON格式的字符串数组，例如：[\"id1.xml\", \"id2.xml\"]。\n"
+                    f"3. 除了这个JSON数组，不要包含任何解释、注释或其他多余的文字。"
                 )
             }
         ]

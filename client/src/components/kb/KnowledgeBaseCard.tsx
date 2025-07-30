@@ -1,9 +1,10 @@
 import React from "react";
 import { FaDatabase, FaFileAlt } from "react-icons/fa";
+import { KBFileType } from "@/data/contentTypes";
 
 interface KnowledgeBaseCardProps {
   name: string;
-  type?: "db" | "file";
+  type?: KBFileType;
   status?: "normal" | "selected" | "added";
   category?: string;
   onClick?: () => void;
