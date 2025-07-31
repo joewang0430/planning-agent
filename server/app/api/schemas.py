@@ -22,3 +22,4 @@ class GenerateOutlineReturn(BaseModel):
     success: bool
     title: str
     outline: str
+    policy: str

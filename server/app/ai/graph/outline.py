@@ -26,7 +26,7 @@ so the maximum reference knowledge base num is 6; minimun is 0.
 class OutlineState(BaseModel):
     title: str
     selectedKbList: List[KnowledgeBaseFile]
-    # policy: str # TODO: consider change it later
+    policy: str # TODO: change it later
     outline: str = ""
 
 
@@ -84,7 +84,7 @@ def node_generate_outline(state: OutlineState):
     # use prompt and get outline result
     final_outline = outline_agent.generate_outline(title, selected_kb_abstract)
 
-    return {"outline": final_outline}
+    return {"policy": selected_kb_abstract, "outline": final_outline}
 
 
 # Construct the graph

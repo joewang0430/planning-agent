@@ -69,7 +69,6 @@ opentelemetry-sdk==1.35.0
 opentelemetry-semantic-conventions==0.56b0
 orjson==3.11.0
 ormsgpack==1.10.0
-oss2==2.19.1
 overrides==7.7.0
 packaging==25.0
 posthog==5.4.0

@@ -1,7 +1,7 @@
 import { GenerateOutlineResponse } from "@/data/generateTypes";
 import React from "react";
 import OutlineEditor from "./internals/OutlineEditor";
-import outlineExample from "@/data/examples/outline.json";
+import PolicyDisplay from "./PolicyDisplay"; // 引入新组件
 
 interface LeftContentProps {
     loading: boolean;
@@ -19,6 +19,10 @@ const LeftContent = ({loading, data}: LeftContentProps) => (
                 查看/编辑知识库 →
             </button>
         </div>
+
+        {/* Policy Display Section */}
+        {data && data.policy && <PolicyDisplay policy={data.policy} />}
+
         {/* middle rollable */}
         <div className="flex-1 min-h-0 overflow-y-auto py-2">
             <div className="space-y-6">

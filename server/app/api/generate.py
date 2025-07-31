@@ -37,16 +37,19 @@ async def router_generate_outline(req: GenerateOutlineRequest):
         initial_state = {
             "title": req.title,
             "selectedKbList": [kb.model_dump() for kb in req.selectedKbList],
-            # policy and outline are not needed for input
+            "policy": "",
+            # outline is not needed for input
         }
 
         final_state = await outline_graph_app.ainvoke(initial_state)
         result_outline = final_state.get("outline", "生成大纲失败，未找到结果。")
+        result_policy = final_state.get("policy", "未能生成政策总结。")
 
         return GenerateOutlineReturn(
             success=True,
             title=req.title,
-            outline=result_outline
+            outline=result_outline,
+            policy=result_policy,
         )
     
     except Exception as e:
