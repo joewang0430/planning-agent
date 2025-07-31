@@ -24,3 +24,14 @@ class GenerateOutlineReturn(BaseModel):
     outline: str
     policy: str
     kb_list: List[KnowledgeBaseFile]
+
+# For /api/content
+class GenerateContentRequest(BaseModel):
+    title: str
+    outline: str
+    context: str
+
+class GenerateContentReturn(BaseModel):
+    success: bool = True
+    title: str
+    content: dict | str # accept dict for content_outline, or str for error message

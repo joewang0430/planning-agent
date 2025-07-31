@@ -170,6 +170,38 @@ class OutlineAgent:
     #         print(f"[错误] 调用AI生成大纲时出错: {e}")
     #         return []
 
+class ContentAgent:
+    def __init__(self):
+        self.client = OpenAI(
+            api_key=os.getenv("FORMAL_API_KEY"), 
+            base_url=os.getenv("FORMAL_BASE_URL"), 
+        )
+        self.model_name = os.getenv("FORMAL_MODEL_NAME", DEFAULT_MODEL_NAME)
+
+    def generate_content(self, title: str, outline: str, context: str):
+        try:
+            messages = Prompt.get_content_prompt(title, outline, context)
+            completion = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=messages,
+                response_format={"type": "json_object"},
+                max_tokens=8192
+            )
+            content_str = completion.choices[0].message.content
+
+            parsed_json = json.loads(content_str)
+            print("--- AI返回的content JSON ---")
+            print(parsed_json)
+            
+            return parsed_json
+        
+        except json.JSONDecodeError:
+            print(f"[错误] AI返回的内容不是有效的JSON格式: {content_str}")
+            return {"error": "JSON Decode Error", "raw_content": content_str}
+        except Exception as e:
+            print(f"[错误] 调用AI生成内容时出错: {e}")
+            return {"error": str(e)}
+    
 
 # test if api works
 class TestAgent:

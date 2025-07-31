@@ -136,6 +136,65 @@ class Prompt:
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_content}
         ]
+    
+    @staticmethod
+    def get_content_prompt(title: str, outline: str, context: str = "") -> list[dict]:
+        """
+        Generates a prompt to write detailed content for each second-level title in an outline.
+        If context is provided, it will be included as a reference.
+        """
+        # The basic instructions define the core tasks and output formats
+        base_requirements = (
+            "1. **核心任务**：请为下面这个大纲的**每一个二级标题**，撰写详细、专业的阐述内容。\n"
+            "2. **输出格式**：你的输出必须是一个单一的、结构化的JSON对象。此JSON对象应包含一个名为 `content_outline` 的键，其值的结构与我提供的大纲完全一致，但在每个二级标题的对象中，增加一个名为 `content` 的键，值为你生成的详细内容字符串。\n"
+            "3. **示例格式**：\n"
+            '   {\n'
+            '     "content_outline": [\n'
+            '       {\n'
+            '         "title": "一、发展基础与面临形势",\n'
+            '         "children": [\n'
+            '           { "title": "（一）发展基础", "content": "这里是为“发展基础”生成的详细内容..." },\n'
+            '           { "title": "（二）面临形势", "content": "这里是为“面临形势”生成的详细内容..." }\n'
+            '         ]\n'
+            '       }\n'
+            '     ]\n'
+            '   }\n'
+            "4. **严格要求**：除了这个JSON对象，绝对不要包含任何解释、注释、代码块标记（如```json ... ```）或其他多余的文字。"
+        )
+
+        # Dynamically construct user instructions based on whether the context is empty or not
+        if not context or not context.strip():
+            # empty
+            user_content = (
+                f"我正在撰写关于“{title}”的专项规划。\n\n"
+                f"这是规划的大纲结构：\n"
+                f"```json\n"
+                f"{outline}\n"
+                f"```\n\n"
+                f"请严格遵循以下要求：\n"
+                f"{base_requirements}"
+            )
+        else:
+            # not empty
+            user_content = (
+                f"我正在撰写关于“{title}”的专项规划。\n\n"
+                f"这是规划的大纲结构：\n"
+                f"```json\n"
+                f"{outline}\n"
+                f"```\n\n"
+                f"这是供你参考的知识库摘要：\n"
+                f"```\n"
+                f"{context}\n"
+                f"```\n\n"
+                f"请在参考上述资料的基础上，严格遵循以下要求：\n"
+                f"{base_requirements}"
+            )
+
+        return [
+            {"role": "system", "content": "你是一位顶级的政策研究和公文撰写专家，擅长将结构化的要点扩展为内容详实、逻辑严谨的段落。"},
+            {"role": "user", "content": user_content}
+        ]
+         
 
     @staticmethod
     def get_test_prompt() -> list[dict]:

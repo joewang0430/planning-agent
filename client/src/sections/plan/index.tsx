@@ -2,13 +2,14 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
-import { generateOutline } from '../../api/generateApi';
-import { GenerateOutlineResponse } from "@/data/generateTypes";
+import { generateOutline, generateContent } from '../../api/generateApi';
+import { GenerateOutlineResponse, GenerateContentResponse } from "@/data/generateTypes";
 import RightContent from "@/components/plan/RightContent";
 import LeftContent from "@/components/plan/LeftContent";
 import { useContext } from "react";
 import { useKnowledgeBase } from "@/contexts/KnowledgeBaseContext";
 import { PageMode } from "@/data/contentTypes";
+
 
 const Plan = () => {
     const searchParams = useSearchParams();
@@ -17,6 +18,10 @@ const Plan = () => {
     const [loading, setLoading] = useState(false);
     const { selectedKbList } = useKnowledgeBase();
     const [pageMode, setPageMode] = useState<PageMode>('outline');
+
+    // Content part
+    const [fullContent, setFullContent] = useState<GenerateContentResponse | null>(null);
+    const [isContentLoading, setIsContentLoading] = useState(false);
 
     // Segmentation ratio status
     const [leftWidth, setLeftWidth] = useState(60); // default left 60%
@@ -38,6 +43,23 @@ const Plan = () => {
                 });
         }
     }, [title]);
+
+    // function for adding content
+    const handleGenerateContent = async () => {
+        if (!data || !data.outline || !data.policy) return;
+
+        setIsContentLoading(true);
+        try {
+            const outlineString = typeof data.outline === 'string' ? data.outline : JSON.stringify(data.outline);
+            const res = await generateContent(title, outlineString, data.policy);
+            setFullContent(res);
+            setPageMode('content'); // Switch pages after success
+        } catch (err) {
+            console.error('(from Plan index.tsx) generateContent API failed:', err);
+        } finally {
+            setIsContentLoading(false);
+        }
+    };
 
     // dragging process function
     const handleMouseDown = () => setIsDragging(true);
@@ -86,10 +108,12 @@ const Plan = () => {
                     style={{ width: `${leftWidth}%` }}
                 >
                     <LeftContent 
-                        loading={loading} 
+                        loading={loading || isContentLoading}
                         data={data}
                         pageMode={pageMode}
                         setPageMode={setPageMode}
+                        onGenerateContent={handleGenerateContent}
+                        fullContent={fullContent} 
                     />
                 </div>
                 {/* drag dividing line */}
@@ -120,10 +144,12 @@ const Plan = () => {
             <div className="max-w-4xl mx-auto lg:hidden space-y-6 flex-1 min-h-0">
                 <div className="bg-white rounded-lg border border-plagt-blue-1 p-6 shadow-sm flex flex-col h-[80vh] min-h-0">
                     <LeftContent 
-                        loading={loading} 
+                        loading={loading || isContentLoading}
                         data={data}
                         pageMode={pageMode}
                         setPageMode={setPageMode}
+                        onGenerateContent={handleGenerateContent}
+                        fullContent={fullContent} 
                     />
                 </div>
                 <div className="bg-white rounded-lg border border-plagt-blue-1 p-6 shadow-sm flex flex-col h-[80vh] min-h-0">

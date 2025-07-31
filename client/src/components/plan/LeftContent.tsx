@@ -1,5 +1,6 @@
-import { GenerateOutlineResponse } from "@/data/generateTypes";
+import { GenerateOutlineResponse, GenerateContentResponse } from "@/data/generateTypes";
 import { PageMode } from "@/data/contentTypes";
+import { generateContent } from "@/api/generateApi";
 import React from "react";
 import OutlineEditor from "./internals/OutlineEditor";
 import PolicyDisplay from "./PolicyDisplay";
@@ -9,15 +10,19 @@ import DownloadBtn from "./buttons/DownloadBtn";
 import WriteContentBtn from "./buttons/WriteContentBtn";
 import RewriteContentBtn from "./buttons/RewriteContentBtn";
 import FinishPlanningBtn from "./buttons/FinishPlanningBtn";
+import ContentDisplay from "./internals/ContentDisplay";
 
 interface LeftContentProps {
     loading: boolean;
     data: GenerateOutlineResponse | null;
     pageMode: PageMode;
     setPageMode: (mode: PageMode) => void;
+    onGenerateContent: () => void; 
+    fullContent: GenerateContentResponse | null; 
 };
 
-const LeftContent = ({loading, data, pageMode, setPageMode}: LeftContentProps) => {
+const LeftContent = ({loading, data, pageMode, setPageMode, onGenerateContent, fullContent}: LeftContentProps) => {
+
     return (
         <div className="flex flex-col h-full min-h-0">
             {/* Policy Display Section */}
@@ -25,7 +30,7 @@ const LeftContent = ({loading, data, pageMode, setPageMode}: LeftContentProps) =
 
             {/* middle rollable */}
             <div className="flex-1 min-h-0 overflow-y-auto py-2">
-                <div className="space-y-6">
+                {/* <div className="space-y-6">
                     {loading ? (
                         <div className="text-center py-8">
                             <div className="text-blue-500">正在生成中...</div>
@@ -37,6 +42,22 @@ const LeftContent = ({loading, data, pageMode, setPageMode}: LeftContentProps) =
                             加载失败
                         </div>
                     )}
+                </div> */}
+                <div className="flex-1 min-h-0 overflow-y-auto py-2">
+                    <div className="space-y-6">
+                        {loading ? (
+                            <div className="text-center text-gray-500">正在生成大纲...</div>
+                        ) : data ? (
+                            // 5. 根据模式切换显示
+                            pageMode === 'outline' ? (
+                                <OutlineEditor outline={typeof data.outline === "string" ? JSON.parse(data.outline) : data.outline} />
+                            ) : (
+                                fullContent && <ContentDisplay content={fullContent.content} />
+                            )
+                        ) : (
+                            <div className="text-center text-gray-400">请先在首页输入标题以生成大纲</div>
+                        )}
+                    </div>
                 </div>
             </div>
             {/* button */}
@@ -45,7 +66,7 @@ const LeftContent = ({loading, data, pageMode, setPageMode}: LeftContentProps) =
                     <>
                         <RewriteOutlineBtn />
                         <div className="flex flex-wrap gap-2">
-                            <WriteContentBtn onClick={() => setPageMode('content')}/>
+                            <WriteContentBtn onClick={onGenerateContent}/>
                             <DownloadBtn />
                         </div>
                     </>

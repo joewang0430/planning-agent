@@ -53,7 +53,7 @@ export const generateOutline = async(
 export const generateContent = async(
     title: string,
     outline: string,
-    knowledgeBaseIds?: string[]
+    context: string,
 ) => {
     const res = await fetch(`${API_BASE_URL}/api/content`, {
         method: 'POST',
@@ -63,7 +63,7 @@ export const generateContent = async(
         body: JSON.stringify({
             title,
             outline,
-            knowledgeBaseIds,
+            context,
         }),
     });
     if (!res.ok) throw new Error('生成内容失败: generateApi.ts');

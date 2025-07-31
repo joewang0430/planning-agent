@@ -8,8 +8,11 @@ from .schemas import (
     ClassifyTitleReturn,
     GenerateOutlineRequest,
     GenerateOutlineReturn,
+    GenerateContentRequest,
+    GenerateContentReturn,
 )
 from ..ai.graph.outline import app as outline_graph_app
+from ..ai.graph.content import app as content_graph_app
 import traceback
 
 
@@ -58,6 +61,31 @@ async def router_generate_outline(req: GenerateOutlineRequest):
         print(f"(from router_generate_outline, generate.py) 生成大纲异常: {e}")
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"生成失败: {str(e)}, (from router_generate_outline, generate.py)")
+
+
+@generate_router.post("/api/content")
+async def router_generate_content(req: GenerateContentRequest):
+    try: 
+        initial_state = {
+            "title": req.title,
+            "outline": req.outline,
+            "context": req.context,
+            # content is not needed for input (I guess)
+        }
+
+        final_state = await content_graph_app.ainvoke(initial_state)
+        result_content = final_state.get("content", "生成内容失败，未找到结果。")
+
+        return GenerateContentReturn(
+                success=True,
+                title=req.title,
+                content=result_content,
+        )
+    
+    except Exception as e:
+        print(f"(from router_generate_content, generate.py) 生成内容异常: {e}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"生成内容失败: {str(e)}, (from router_generate_content, generate.py)")
 
 
 # @generate_router.post("/api/outline")
