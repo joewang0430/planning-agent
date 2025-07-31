@@ -23,3 +23,4 @@ class GenerateOutlineReturn(BaseModel):
     title: str
     outline: str
     policy: str
+    kb_list: List[KnowledgeBaseFile]

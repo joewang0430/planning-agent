@@ -1,4 +1,5 @@
 import { OutlineStruct } from "./contentTypes";
+import { KnowledgeBaseFile } from "./contentTypes";
 
 // this is used for getting api response, not in the ui
 export interface GenerateOutlineResponse {
@@ -6,4 +7,5 @@ export interface GenerateOutlineResponse {
     title: string;
     outline: string;
     policy: string;
+    kb_list: KnowledgeBaseFile[];
 };
