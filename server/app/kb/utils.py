@@ -5,6 +5,7 @@ from typing import List
 from ..api.schemas import KnowledgeBaseFile
 import chromadb
 from .import_to_chromadb import CHROMA_PERSIST_DIR, COLLECTION_NAME
+import docx
 
 
 load_dotenv()
@@ -17,6 +18,7 @@ MAX_KB_NUM = 6  # max 6 kb each generation
 USER_MAX_KB_NUM = 5 # max 5 kb for user to select
 
 KB_DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../kb/data"))
+KB_UPLOADS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../kb/uploads"))
 
 MAX_CHAR_NUM = 950
 
@@ -153,16 +155,29 @@ class KnowledgeBase:
                             print(f"Warning: Document with ID '{doc_id}' not found in ChromaDB.")
                 
                 elif bf.type == 'file':
-                    # Construct file path and read from file system
-                    if bf.category:
-                        file_path = os.path.join(KB_DATA_DIR, bf.category, bf.name)
-                        if os.path.exists(file_path):
-                            with open(file_path, 'r', encoding='utf-8') as f:
-                                content = f.read()
+                    # User upload files has no category
+                    file_path = os.path.join(KB_UPLOADS_DIR, bf.name)
+                    if os.path.exists(file_path):
+                        # --- File classify starts ---
+                        if bf.name.endswith('.docx'):
+                            # If it is a.docx file, read it using python-docx
+                            try: 
+                                doc = docx.Document(file_path)
+                                full_text = [para.text for para in doc.paragraphs]
+                                content = '\n'.join(full_text)
+                            except Exception as e:
+                                print(f"Error reading .docx file '{bf.name}': {e}")
+                                content = ""
                         else:
-                            print(f"Warning: File not found at '{file_path}'.")
+                            try:
+                                with open(file_path, 'r', encoding='utf-8') as f:
+                                    content = f.read()
+                            except UnicodeDecodeError:
+                                print(f"Warning: Could not decode file '{bf.name}' as utf-8.")
+                                content = f"Non-text file content for {bf.name} is not displayed."
+                        # --- File classify ends ---
                     else:
-                        print(f"Warning: Category is missing for file '{bf.name}'. Cannot determine file path.")
+                        print(f"Warning: File not found at '{file_path}'.")
 
             except Exception as e:
                 print(f"Error processing '{bf.name}': {e}")
@@ -206,5 +221,6 @@ if __name__ == "__main__":
     filtered_kb_list = KnowledgeBase.exclude_kb_list(all_kb_list, selected_kb)
     print("Filtered list:")
     print(filtered_kb_list)
+    # ...
     print("\nExpected output:")
-    print("[{'category': '组织机构', 'files': [{'name': 'B.xml', 'type': 'file'}]}, {'category': '国土能源', 'files': [{'name': 'C.xml', 'type': 'file'}, {'name': 'D.xml', 'type': 'file'}]}]")
+    print("[{'category': '组织机构', 'files': [{'name': 'B.xml', 'type': 'db'}]}, {'category': '国土能源', 'files': [{'name': 'D.xml', 'type': 'db'}]}]")

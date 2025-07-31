@@ -39,7 +39,7 @@ const PolicyDisplay = ({ policy, kb_list = [] }: PolicyDisplayProps) => {
       
       {/* Expanded */}
       {isExpanded && (
-        <div className="mt-2 pl-6 animate-fade-in">
+        <div className="mt-2 pl-6 animate-fade-in max-h-60 overflow-y-auto">
           <div className="mb-4">
             <h4 className="font-semibold text-gray-800 mb-2">
               参考知识库总结：

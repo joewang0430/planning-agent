@@ -100,6 +100,13 @@ const Plan = () => {
                     style={{ width: `${100 - leftWidth}%` }}
                 >
                     <RightContent />
+                    {/* Debug View for Context */}
+                    {/* <div className="mt-4 p-2 border-t border-dashed border-red-400 bg-red-50">
+                        <h5 className="font-bold text-red-600">Context Debug View:</h5>
+                        <pre className="text-xs text-red-700 bg-white p-2 rounded overflow-auto">
+                        {JSON.stringify(selectedKbList, null, 2)}
+                        </pre>
+                    </div> */}
                 </div>
             </div>
             {/* modile layout */}
@@ -109,6 +116,13 @@ const Plan = () => {
                 </div>
                 <div className="bg-white rounded-lg border border-plagt-blue-1 p-6 shadow-sm flex flex-col h-[80vh] min-h-0">
                     <RightContent />
+                    {/* Debug View for Context */}
+                    {/* <div className="mt-4 p-2 border-t border-dashed border-red-400 bg-red-50">
+                        <h5 className="font-bold text-red-600">Context Debug View:</h5>
+                        <pre className="text-xs text-red-700 bg-white p-2 rounded overflow-auto">
+                        {JSON.stringify(selectedKbList, null, 2)}
+                        </pre>
+                    </div> */}
                 </div>
             </div>
         </main>

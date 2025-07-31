@@ -8,6 +8,7 @@ import { useKnowledgeBase } from "@/contexts/KnowledgeBaseContext";
 
 
 const KbSelector = () => {
+    const MAX_USER_SELECT = 3;
     // The knowledge base classification and files returned by the back end
     const [kbList, setKbList] = useState<KnowledgeBaseCategory[]>([]);
     // The currently selected label (category
@@ -51,7 +52,7 @@ const KbSelector = () => {
         <div className="flex flex-col md:flex-row gap-6 w-full h-full">
             {/* Left: 已调用知识库 */}
             <div className="border border-plagt-blue-1 rounded-2xl p-6 bg-white flex flex-col min-h-[400px] max-h-[600px] w-full md:w-1/2">
-                <div className="text-center text-lg font-semibold text-blue-700 mb-4">已调用知识库</div>
+                <div className="text-center text-lg font-semibold text-blue-700 mb-4">已调用知识库 {selectedKbList.length}/{MAX_USER_SELECT}</div>
                 <div className="grid grid-cols-2 gap-x-4 gap-y-2 overflow-y-auto pt-2 pb-2 px-2" style={{maxHeight: 400}}>
                     {selectedKbList.map((kb, i) => (
                         <div key={i}>
@@ -163,8 +164,28 @@ const KbSelector = () => {
                         })
                     )}
                 </div>
-                
+
                 <div className="flex justify-center gap-4 mt-auto">
+                    <button
+                        className="px-8 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 disabled:bg-gray-300"
+                        disabled={!selectedOtherKbName || selectedKbList.length >= MAX_USER_SELECT}
+                        onClick={() => {
+                            const kb = other.find(k => k.name === selectedOtherKbName);
+                            if (kb && activeTag) {
+                                addKb({
+                                    name: kb.name,
+                                    type: 'db',
+                                    category: activeTag
+                                });
+                            }
+                            setSelectedOtherKbName(null);
+                        }}
+                    >
+                        选择
+                    </button>
+                </div>
+                
+                {/* <div className="flex justify-center gap-4 mt-auto">
                     <button
                         className="px-8 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 disabled:bg-gray-300"
                         disabled={!selectedOtherKbName}
@@ -176,7 +197,7 @@ const KbSelector = () => {
                     >
                         选择
                     </button>
-                </div>
+                </div> */}
             </div>
         </div>
     );
