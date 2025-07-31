@@ -90,7 +90,7 @@ class Prompt:
         # The basic requirements are applicable in both cases
         base_requirements = (
             "1. 以结构化 JSON 格式输出，不要输出任何解释或说明。\n"
-            "2. 一级标题为章节标题（如“一、形式需求”），每个一级标题下有若干二级标题（如“（一）发展基础。”），二级标题放在 children 字段的数组里。最少也要给我列四个一级标题\n"
+            "2. 一级标题为章节标题（如“一、形式需求”），每个一级标题下有若干二级标题（如“（一）发展基础。”），二级标题放在 children 字段的数组里。最少也要列三个一级标题\n"   # this can be changed later
             "3. 示例格式：\n"
             '[\n'
             '  {\n'

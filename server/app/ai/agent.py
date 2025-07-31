@@ -74,7 +74,9 @@ class KbAgent:
             selection_obj = json.loads(selection_str)
             # from 'selected_ids' keys, safely extract array
             selected_ids = selection_obj.get("selected_ids", [])
-            return selected_ids
+            # remove duplicates and preserve order
+            unique_ids = list(dict.fromkeys(selected_ids))
+            return unique_ids
         except json.JSONDecodeError:
             print(f"[错误] AI返回的知识库选择不是有效的JSON格式: {selection_str}")
             return []
