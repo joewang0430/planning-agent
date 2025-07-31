@@ -1,5 +1,4 @@
-import { KnowledgeBaseFile } from "@/data/contentTypes";
-import { OutlineStruct } from "@/data/contentTypes";
+import { KnowledgeBaseFile, OutlineStruct, OutlineSection } from "@/data/contentTypes";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -78,7 +77,7 @@ export const generateContent = async(
 // API for rewriting a single subtitle
 export const rewriteSubtitle = async (
     plan_title: string,
-    full_outline: OutlineStruct[],
+    full_outline: OutlineStruct, // FIX: Changed from OutlineStruct[] to OutlineStruct
     parent_title: string,
     current_subtitle: string,
     context: string,
@@ -104,8 +103,8 @@ export const rewriteSubtitle = async (
 // API for rewriting an entire section
 export const rewriteSection = async (
     plan_title: string,
-    full_outline: OutlineStruct[],
-    current_section: OutlineStruct,
+    full_outline: OutlineStruct, // FIX: Changed from OutlineStruct[] to OutlineStruct
+    current_section: OutlineSection, // FIX: Changed from OutlineStruct to OutlineSection
     policy_context: string,
     user_requirement?: string
 ) => {

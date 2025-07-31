@@ -57,10 +57,10 @@ const LeftContent = ({
                 <div className="flex-1 min-h-0 overflow-y-auto py-2">
                     <div className="space-y-6">
                         {loading ? (
-                            <div className="text-center text-gray-500">正在生成大纲...</div>
+                            <div className="text-center text-gray-500">正在生成...</div>
                         ) : data ? (
                             pageMode === 'outline' ? (
-                                <OutlineEditor outline={typeof data.outline === "string" ? JSON.parse(data.outline) : data.outline} />
+                                <OutlineEditor initialData={data} />
                             ) : (
                                 fullContent && <ContentDisplay content={fullContent.content} />
                             )

@@ -3,27 +3,79 @@
 import React, { useState } from "react";
 import EditableBlock from "./EditableBlock";
 import RewriteInput from "../RewriteInput";
+import { rewriteSection, rewriteSubtitle } from "@/api/generateApi";
+import { OutlineStruct, OutlineSection } from "@/data/contentTypes";
 
 interface EditableTitleProps {
     defaultValue: string;
-    onChange?: (value: string) => void;
-    isSub?: boolean; // if is sub title
+    isSub: boolean;
+    fullOutline: OutlineStruct;
+    sectionIndex: number;
+    childIndex?: number;
+    onOutlineChange: (newOutline: OutlineStruct) => void;
+    planTitle: string;
+    policyContext: string;
 };
 
-// show button when hovered
-const EditableTitle = ({
-    defaultValue,
-    onChange,
-    isSub = false,
-}: EditableTitleProps) => {
+const EditableTitle = (props: EditableTitleProps) => {
+    const {
+        defaultValue,
+        isSub,
+        fullOutline,
+        sectionIndex,
+        childIndex,
+        onOutlineChange,
+        planTitle,
+        policyContext,
+    } = props;
+
     const [hover, setHover] = useState(false);
     const [isRewriteActive, setIsRewriteActive] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleRewriteSubmit = (requirement: string) => {
-        // TODO: 在下一步中将在这里调用API
-        console.log("用户要求:", requirement);
-        // 成功后关闭输入框
-        // setIsRewriteActive(false); 
+    const handleRewriteSubmit = async (user_requirement: string) => {
+        setIsLoading(true);
+        try {
+            if (isSub && childIndex !== undefined) {
+                const parentSection = fullOutline[sectionIndex];
+                const res = await rewriteSubtitle(
+                    planTitle,
+                    fullOutline, // FIX: Pass directly, without wrapping in an array
+                    parentSection.title,
+                    defaultValue,
+                    policyContext,
+                    user_requirement
+                );
+
+                if (res && res.success && res.new_title) {
+                    const newOutline = JSON.parse(JSON.stringify(fullOutline));
+                    if (newOutline[sectionIndex] && newOutline[sectionIndex].children) {
+                        newOutline[sectionIndex].children[childIndex].title = res.new_title;
+                    }
+                    onOutlineChange(newOutline);
+                }
+            } else {
+                const sectionToRewrite = fullOutline[sectionIndex];
+                const res = await rewriteSection(
+                    planTitle,
+                    fullOutline, // FIX: Pass directly
+                    sectionToRewrite, // FIX: Pass the object directly, not in an array
+                    policyContext,
+                    user_requirement
+                );
+
+                if (res && res.success && res.new_section) {
+                    const newOutline = [...fullOutline];
+                    newOutline[sectionIndex] = res.new_section;
+                    onOutlineChange(newOutline);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to rewrite title:", error);
+        } finally {
+            setIsLoading(false);
+            setIsRewriteActive(false);
+        }
     };
 
     return (
@@ -32,13 +84,8 @@ const EditableTitle = ({
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
         >
-            {/* editable content area */}
-            <EditableBlock
-                defaultValue={defaultValue}
-                onChange={onChange}
-            />
-            {/* when hovering, the "Rewrite Title" button is displayed */}
-            {hover && (
+            <EditableBlock defaultValue={defaultValue} />
+            {hover && !isRewriteActive && (
                 <button
                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded shadow text-xs whitespace-nowrap"
                    onClick={() => setIsRewriteActive(true)}
@@ -46,19 +93,17 @@ const EditableTitle = ({
                     {isSub ? "重写标题" : "重写整段标题"}
                 </button>
             )}
-            {/* Render it when the input box is activated */}
             {isRewriteActive && (
-                <RewriteInput
-                    // TODO: 在下一步中实现真正的加载状态
-                    isLoading={false} 
-                    onSubmit={handleRewriteSubmit}
-                    onClose={() => setIsRewriteActive(false)}
-                />
+                <div className="mt-2">
+                    <RewriteInput
+                        isLoading={isLoading} 
+                        onSubmit={handleRewriteSubmit}
+                        onClose={() => setIsRewriteActive(false)}
+                    />
+                </div>
             )}
         </div>
     );
 };
-
-// className="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded shadow text-xs" // ← 这里改定位
 
 export default EditableTitle;

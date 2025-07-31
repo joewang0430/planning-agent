@@ -1,7 +1,7 @@
 export type KBFileType = "db" | "file";
 
 // outline
-type OutlineSection = {
+export type OutlineSection = {
   title: string;
   children?: { title: string }[];
 };
