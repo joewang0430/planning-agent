@@ -11,6 +11,7 @@ import WriteContentBtn from "./buttons/WriteContentBtn";
 import RewriteContentBtn from "./buttons/RewriteContentBtn";
 import FinishPlanningBtn from "./buttons/FinishPlanningBtn";
 import ContentDisplay from "./internals/ContentDisplay";
+import ContentEditor from "./internals/ContentEditor";
 
 interface LeftContentProps {
     loading: boolean;
@@ -62,7 +63,7 @@ const LeftContent = ({
                             pageMode === 'outline' ? (
                                 <OutlineEditor initialData={data} />
                             ) : (
-                                fullContent && <ContentDisplay content={fullContent.content} />
+                                fullContent && <ContentEditor content={fullContent.content} />
                             )
                         ) : (
                             <div className="text-center text-gray-400">请先在首页输入标题以生成大纲</div>
