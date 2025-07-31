@@ -8,6 +8,7 @@ import RightContent from "@/components/plan/RightContent";
 import LeftContent from "@/components/plan/LeftContent";
 import { useContext } from "react";
 import { useKnowledgeBase } from "@/contexts/KnowledgeBaseContext";
+import { PageMode } from "@/data/contentTypes";
 
 const Plan = () => {
     const searchParams = useSearchParams();
@@ -15,6 +16,7 @@ const Plan = () => {
     const [data, setData] = useState<GenerateOutlineResponse | null>(null);
     const [loading, setLoading] = useState(false);
     const { selectedKbList } = useKnowledgeBase();
+    const [pageMode, setPageMode] = useState<PageMode>('outline');
 
     // Segmentation ratio status
     const [leftWidth, setLeftWidth] = useState(60); // default left 60%
@@ -83,7 +85,12 @@ const Plan = () => {
                     className="bg-white rounded-lg border border-plagt-blue-1 p-6 shadow-sm flex flex-col h-full min-h-0"
                     style={{ width: `${leftWidth}%` }}
                 >
-                    <LeftContent loading={loading} data={data}/>
+                    <LeftContent 
+                        loading={loading} 
+                        data={data}
+                        pageMode={pageMode}
+                        setPageMode={setPageMode}
+                    />
                 </div>
                 {/* drag dividing line */}
                 <div 
@@ -112,7 +119,12 @@ const Plan = () => {
             {/* modile layout */}
             <div className="max-w-4xl mx-auto lg:hidden space-y-6 flex-1 min-h-0">
                 <div className="bg-white rounded-lg border border-plagt-blue-1 p-6 shadow-sm flex flex-col h-[80vh] min-h-0">
-                    <LeftContent loading={loading} data={data}/>
+                    <LeftContent 
+                        loading={loading} 
+                        data={data}
+                        pageMode={pageMode}
+                        setPageMode={setPageMode}
+                    />
                 </div>
                 <div className="bg-white rounded-lg border border-plagt-blue-1 p-6 shadow-sm flex flex-col h-[80vh] min-h-0">
                     <RightContent />

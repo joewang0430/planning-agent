@@ -12,12 +12,11 @@ export const classifyTitle = async(title: string) => {
     return await res.json(); // { valid: boolean }
 };
 
-// TOSTRUCT
+
 export const generateOutline = async(
     title: string,
     selectedKbList: KnowledgeBaseFile[]
 ) => {
-    console.log("api called once")
     const res = await fetch(`${API_BASE_URL}/api/outline`, {
         method: 'POST',
         headers: {
@@ -31,6 +30,24 @@ export const generateOutline = async(
     if (!res.ok) throw new Error('生成大纲失败: generateApi.ts');
     return await res.json();
 };
+
+// export const rewriteOutline = async(
+//     title: string,
+//     context: string,
+//     curr_outline: string,
+//     requirements?: string,
+// ) => {
+//     const res = await fetch(`${API_BASE_URL}/api/rewrite/outline`, {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({
+//             title,
+//             selectedKbList, // directy convey context select knowledgebase
+//         }),
+//     });
+// };
 
 // TOSTRUCT
 export const generateContent = async(

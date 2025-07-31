@@ -18,3 +18,5 @@ export interface KnowledgeBaseCategory {
     category: string;
     files: KnowledgeBaseFile[];
 };
+
+export type PageMode = 'outline' | 'content'

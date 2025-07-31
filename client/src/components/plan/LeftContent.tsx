@@ -1,15 +1,23 @@
 import { GenerateOutlineResponse } from "@/data/generateTypes";
+import { PageMode } from "@/data/contentTypes";
 import React from "react";
 import OutlineEditor from "./internals/OutlineEditor";
 import PolicyDisplay from "./PolicyDisplay";
-import Link from "next/link"; // 引入 Link 组件
+import Link from "next/link"; 
+import RewriteOutlineBtn from "./buttons/RewriteOutlineBtn";
+import DownloadBtn from "./buttons/DownloadBtn";
+import WriteContentBtn from "./buttons/WriteContentBtn";
+import RewriteContentBtn from "./buttons/RewriteContentBtn";
+import FinishPlanningBtn from "./buttons/FinishPlanningBtn";
 
 interface LeftContentProps {
     loading: boolean;
     data: GenerateOutlineResponse | null;
+    pageMode: PageMode;
+    setPageMode: (mode: PageMode) => void;
 };
 
-const LeftContent = ({loading, data}: LeftContentProps) => {
+const LeftContent = ({loading, data, pageMode, setPageMode}: LeftContentProps) => {
     return (
         <div className="flex flex-col h-full min-h-0">
             {/* Policy Display Section */}
@@ -33,17 +41,24 @@ const LeftContent = ({loading, data}: LeftContentProps) => {
             </div>
             {/* button */}
             <div className="mt-auto flex flex-wrap gap-2 justify-between items-center pt-4">
-                <button className="flex-shrink-0 flex items-center text-gray-600 hover:text-gray-800 min-w-[80px]">
-                    重写大纲
-                </button>
-                <div className="flex flex-wrap gap-2">
-                    <button className="flex-shrink-0 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors min-w-[90px]">
-                        撰写内容
-                    </button>
-                    <button className="flex-shrink-0 border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 transition-colors min-w-[70px]">
-                        下载
-                    </button>
-                </div>
+                {pageMode === 'outline' ? (
+                    <>
+                        <RewriteOutlineBtn />
+                        <div className="flex flex-wrap gap-2">
+                            <WriteContentBtn onClick={() => setPageMode('content')}/>
+                            <DownloadBtn />
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <RewriteContentBtn />
+                        <div className="flex flex-wrap gap-2">
+                            <FinishPlanningBtn />
+                            <DownloadBtn />
+                        </div>
+                    </>
+                )}
+                
             </div>
         </div>
     );
