@@ -46,3 +46,27 @@ class RewriteOutlineReturn(BaseModel):
     title: str
     outline: str
 
+# For rewriting a subtitle
+class RewriteSubtitleRequest(BaseModel):
+    plan_title: str
+    full_outline: list
+    parent_title: str
+    current_subtitle: str
+    context: str
+    user_requirement: Optional[str] = ""
+
+class RewriteSubtitleReturn(BaseModel):
+    success: bool = True
+    new_title: str
+
+# For rewriting a section
+class RewriteSectionRequest(BaseModel):
+    plan_title: str
+    full_outline: list
+    current_section: dict
+    policy_context: str
+    user_requirement: Optional[str] = ""
+
+class RewriteSectionReturn(BaseModel):
+    success: bool = True
+    new_section: dict

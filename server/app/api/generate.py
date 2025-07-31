@@ -12,6 +12,10 @@ from .schemas import (
     GenerateContentReturn,
     RewriteOutlineRequest,
     RewriteOutlineReturn,
+    RewriteSubtitleRequest,
+    RewriteSubtitleReturn,
+    RewriteSectionRequest,
+    RewriteSectionReturn,
 )
 from ..ai.graph.outline import app as outline_graph_app
 from ..ai.graph.content import app as content_graph_app
@@ -103,6 +107,45 @@ async def router_generate_content(req: GenerateContentRequest):
         print(f"(from router_generate_content, generate.py) 生成内容异常: {e}")
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"生成内容失败: {str(e)}, (from router_generate_content, generate.py)")
+    
+
+@generate_router.post("/api/rewrite/subtitle")
+async def router_rewrite_subtitle(req: RewriteSubtitleRequest):
+    try:
+        new_title = outline_agent.rewrite_subtitle(
+            plan_title=req.plan_title,
+            full_outline=req.full_outline,
+            parent_title=req.parent_title,
+            current_subtitle=req.current_subtitle,
+            context=req.context,
+            user_requirement=req.user_requirement
+        )
+        return RewriteSubtitleReturn(new_title=new_title)
+    except Exception as e:
+        print(f"(from router_rewrite_subtitle, generate.py) 重写二级标题异常: {e}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"重写二级标题失败: {str(e)}")
+
+
+@generate_router.post("/api/rewrite/section")
+async def router_rewrite_section(req: RewriteSectionRequest):
+    try:
+        new_section = outline_agent.rewrite_section(
+            plan_title=req.plan_title,
+            full_outline=req.full_outline,
+            current_section=req.current_section,
+            policy_context=req.policy_context,
+            user_requirement=req.user_requirement
+        )
+        # 检查 agent 是否返回了错误字典
+        if isinstance(new_section, dict) and 'error' in new_section:
+             raise Exception(f"AI Agent Error: {new_section.get('raw_content', new_section.get('error'))}")
+
+        return RewriteSectionReturn(new_section=new_section)
+    except Exception as e:
+        print(f"(from router_rewrite_section, generate.py) 重写章节异常: {e}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"重写章节失败: {str(e)}")
 
 
 # @generate_router.post("/api/outline")

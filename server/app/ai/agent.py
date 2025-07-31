@@ -142,6 +142,76 @@ class OutlineAgent:
         )
         outline = completion.choices[0].message.content
         return outline
+    
+    def rewrite_subtitle(
+        self,
+        plan_title: str,
+        full_outline: list,
+        parent_title: str,
+        current_subtitle: str,
+        context: str,
+        user_requirement: str = ""
+    ):
+        """
+        Rewrites a single second-level title.
+        """
+        messages = Prompt.get_rewrite_subtitle_prompt(
+            plan_title,
+            full_outline,
+            parent_title,
+            current_subtitle,
+            context,
+            user_requirement
+        )
+        try:
+            completion = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=messages,
+            )
+            new_title = completion.choices[0].message.content
+            # Clear out possible quotation marks
+            return new_title.strip().strip('"')
+        except Exception as e:
+            print(f"[错误] 调用AI重写二级标题时出错: {e}")
+            # Return to the original title to avoid front-end errors
+            return current_subtitle
+        
+    def rewrite_section(
+        self,
+        plan_title: str,
+        full_outline: list,
+        current_section: dict,
+        policy_context: str,
+        user_requirement: str = ""
+    ):
+        """
+        Rewrites an entire section, expecting a JSON object as return.
+        """
+        messages = Prompt.get_rewrite_section_prompt(
+            plan_title,
+            full_outline,
+            current_section,
+            policy_context,
+            user_requirement
+        )
+        try:
+            completion = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=messages,
+                response_format={"type": "json_object"},
+            )
+            response_str = completion.choices[0].message.content
+            
+            # 解析AI返回的JSON字符串
+            parsed_json = json.loads(response_str)
+            return parsed_json
+
+        except json.JSONDecodeError:
+            print(f"[错误] AI返回的章节不是有效的JSON格式: {response_str}")
+            return {"error": "JSON Decode Error", "raw_content": response_str}
+        except Exception as e:
+            print(f"[错误] 调用AI重写章节时出错: {e}")
+            return {"error": str(e)}
 
     # def generate_outline(self, title: str, kb_abstract: str):
     #     messages = Prompt.get_outline_prompt(title, kb_abstract)

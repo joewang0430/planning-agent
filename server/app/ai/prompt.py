@@ -194,7 +194,81 @@ class Prompt:
             {"role": "system", "content": "你是一位顶级的政策研究和公文撰写专家，擅长将结构化的要点扩展为内容详实、逻辑严谨的段落。"},
             {"role": "user", "content": user_content}
         ]
-         
+
+    @staticmethod
+    def get_rewrite_subtitle_prompt(
+        plan_title: str,
+        full_outline: list,
+        parent_title: str,
+        current_subtitle: str,
+        context: str,
+        user_requirement: str = ""
+    ) -> list[dict]:
+        """
+        Generates a prompt to rewrite a single second-level title, with full outline context.
+        """
+        import json
+        # If the user has no input requirements, a default instruction will be provided
+        requirement_prompt = f"用户的具体要求是：『{user_requirement}』。" if user_requirement and user_requirement.strip() else "请基于整体大纲结构和参考资料，优化这个标题，使其更精准、更专业。"
+        
+        # If there is no knowledge base summary, no relevant prompt will be displayed
+        context_prompt = f"背景参考资料如下：\n```\n{context}\n```\n" if context and context.strip() else ""
+
+        user_content = (
+            f"我正在撰写一份名为《{plan_title}》的专项规划。这是当前规划的完整大纲结构，供你理解上下文：\n"
+            f"```json\n{json.dumps(full_outline, ensure_ascii=False, indent=2)}\n```\n\n"
+            f"{context_prompt}\n"
+            f"**核心任务**：请聚焦于大纲中的『{parent_title}』这一章，找到并重写其下的二级标题：『{current_subtitle}』。\n"
+            f"{requirement_prompt}\n\n"
+            f"**严格要求**：请只返回重写后的新标题字符串，不要包含任何JSON格式、引号、解释或其他多余文字。"
+        )
+
+        return [
+            {"role": "system", "content": "你是一位精通公文措辞的专家，擅长在理解整体结构的基础上，对局部细节进行优化和精炼。"},
+            {"role": "user", "content": user_content}
+        ]
+
+    @staticmethod
+    def get_rewrite_section_prompt(
+        plan_title: str,
+        full_outline: list,
+        current_section: dict,
+        policy_context: str,
+        user_requirement: str = ""
+    ) -> list[dict]:
+        """
+        Generates a prompt to rewrite an entire section, with full outline context.
+        """
+        import json
+        requirement_prompt = f"用户的额外要求是：『{user_requirement}』。" if user_requirement and user_requirement.strip() else "请基于参考政策和整体大纲的上下文，优化当前章节的逻辑结构和标题。"
+        
+        context_prompt = f"请参考以下政策要点：\n【政策参考】\n{policy_context}\n【参考结束】\n\n" if policy_context and policy_context.strip() else ""
+
+        user_content = (
+            f"我正在撰写一份名为《{plan_title}》的专项规划。\n"
+            f"{context_prompt}"
+            f"这是当前规划的完整大纲结构，供你理解整体上下文：\n"
+            f"```json\n{json.dumps(full_outline, ensure_ascii=False, indent=2)}\n```\n\n"
+            f"**核心任务**：请聚焦于上述大纲中的以下章节，并对其进行重写：\n"
+            f"```json\n{json.dumps(current_section, ensure_ascii=False, indent=2)}\n```\n"
+            f"重写需要覆盖该章节的一级标题及其下属的所有二级标题，重写后二级标题的数量和内容都可以发生变化。\n"
+            f"{requirement_prompt}\n\n"
+            f"**输出格式要求**：你的回答必须是一个单一、完整的JSON对象，该对象代表重写后的新章节。格式如下：\n"
+            '{\n'
+            '  "title": "新的一级标题",\n'
+            '  "children": [\n'
+            '    { "title": "新的二级标题A" },\n'
+            '    { "title": "新的二级标题B" }\n'
+            '  ]\n'
+            '}\n'
+            "除了这个JSON对象，不要返回任何其他内容。"
+        )
+
+        return [
+            {"role": "system", "content": "你是一位顶级的政策研究和规划专家，擅长在把握全局的前提下，对局部章节进行深度重构和优化。"},
+            {"role": "user", "content": user_content}
+        ]
+
 
     @staticmethod
     def get_test_prompt() -> list[dict]:
