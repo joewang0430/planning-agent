@@ -122,3 +122,29 @@ export const rewriteSection = async (
     if (!res.ok) throw new Error('重写章节失败: generateApi.ts');
     return await res.json(); // Returns { success: boolean, new_section: OutlineStruct }
 };
+
+
+// API for rewriting a single paragraph of content
+export const rewriteContentParagraph = async (
+    plan_title: string,
+    section_title: string,
+    subtitle_title: string,
+    current_content: string,
+    context: string,
+    user_requirement?: string
+) => {
+    const res = await fetch(`${API_BASE_URL}/api/rewrite/content_paragraph`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            plan_title,
+            section_title,
+            subtitle_title,
+            current_content,
+            context,
+            user_requirement,
+        }),
+    });
+    if (!res.ok) throw new Error('重写段落内容失败: generateApi.ts');
+    return await res.json(); // Returns { success: boolean, new_content: string }
+};

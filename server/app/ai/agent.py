@@ -271,6 +271,40 @@ class ContentAgent:
         except Exception as e:
             print(f"[错误] 调用AI生成内容时出错: {e}")
             return {"error": str(e)}
+        
+    def rewrite_content_paragraph(
+        self,
+        plan_title: str,
+        section_title: str,
+        subtitle_title: str,
+        current_content: str,
+        context: str,
+        user_requirement: str = ""
+    ):
+        """
+        Rewrites a single paragraph of content.
+        """
+        messages = Prompt.get_rewrite_content_prompt(
+            plan_title,
+            section_title,
+            subtitle_title,
+            current_content,
+            context,
+            user_requirement
+        )
+        try:
+            completion = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=messages,
+                max_tokens=4096 # leave sufficient space for rewriting the content
+            )
+            new_content = completion.choices[0].message.content
+            # Return plain text directly
+            return new_content.strip()
+        except Exception as e:
+            print(f"[错误] 调用AI重写段落内容时出错: {e}")
+            # Return the original content when an error occurs to prevent front-end errors
+            return current_content
     
 
 # test if api works

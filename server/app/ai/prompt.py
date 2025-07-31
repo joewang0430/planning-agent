@@ -268,6 +268,43 @@ class Prompt:
             {"role": "system", "content": "你是一位顶级的政策研究和规划专家，擅长在把握全局的前提下，对局部章节进行深度重构和优化。"},
             {"role": "user", "content": user_content}
         ]
+    
+    @staticmethod
+    def get_rewrite_content_prompt(
+        plan_title: str,
+        section_title: str,
+        subtitle_title: str,
+        current_content: str,
+        context: str,
+        user_requirement: str = ""
+    ) -> list[dict]:
+        """
+        Generates a prompt to rewrite a paragraph of content.
+        """
+        # If the user has no input requirements, a default instruction will be provided
+        requirement_prompt = f"用户的具体要求是：『{user_requirement}』。" if user_requirement and user_requirement.strip() else "请基于参考资料和上下文，优化这段内容的措辞和逻辑，使其更专业、更流畅。"
+        
+        # If there is no knowledge base summary, no relevant prompt will be displayed
+        context_prompt = f"请参考以下政策要点：\n【政策参考】\n{context}\n【参考结束】\n\n" if context and context.strip() else ""
+
+        user_content = (
+            f"我正在为一个名为《{plan_title}》的专项规划撰写内容。\n"
+            f"{context_prompt}"
+            f"**任务上下文**：\n"
+            f"- 当前章节（一级标题）：『{section_title}』\n"
+            f"- 当前小节（二级标题）：『{subtitle_title}』\n\n"
+            f"**核心任务**：请重写以下这段属于『{subtitle_title}』小节的内容：\n"
+            f"```text\n"
+            f"{current_content}\n"
+            f"```\n\n"
+            f"**重写指令**：{requirement_prompt}\n\n"
+            f"**严格要求**：请只返回重写后的新内容段落（纯文本字符串），不要包含任何标题、JSON格式、引号、解释或其他多余文字。"
+        )
+
+        return [
+            {"role": "system", "content": "你是一位顶级的政策研究和公文撰写专家，擅长在理解上下文的基础上，对具体段落进行深度优化、改写和扩写。"},
+            {"role": "user", "content": user_content}
+        ]
 
 
     @staticmethod

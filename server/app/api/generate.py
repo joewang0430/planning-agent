@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 import json
-from ..ai.agent import ClassificationAgent, OutlineAgent
+from ..ai.agent import ClassificationAgent, OutlineAgent, ContentAgent
 from typing import List, Optional
 from .schemas import (
     ClassifyTitleRequest,
@@ -16,6 +16,10 @@ from .schemas import (
     RewriteSubtitleReturn,
     RewriteSectionRequest,
     RewriteSectionReturn,
+    RewriteSectionRequest,
+    RewriteSectionReturn,
+    RewriteContentParagraphRequest,
+    RewriteContentParagraphReturn,
 )
 from ..ai.graph.outline import app as outline_graph_app
 from ..ai.graph.content import app as content_graph_app
@@ -27,6 +31,7 @@ generate_router = APIRouter()
 
 classify_agent = ClassificationAgent()
 outline_agent = OutlineAgent()
+content_agent = ContentAgent()
 
 
 @generate_router.post("/api/classify_title")
@@ -146,6 +151,24 @@ async def router_rewrite_section(req: RewriteSectionRequest):
         print(f"(from router_rewrite_section, generate.py) 重写章节异常: {e}")
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"重写章节失败: {str(e)}")
+    
+
+@generate_router.post("/api/rewrite/content_paragraph")
+async def router_rewrite_content_paragraph(req: RewriteContentParagraphRequest):
+    try:
+        new_content = content_agent.rewrite_content_paragraph(
+            plan_title=req.plan_title,
+            section_title=req.section_title,
+            subtitle_title=req.subtitle_title,
+            current_content=req.current_content,
+            context=req.context,
+            user_requirement=req.user_requirement
+        )
+        return RewriteContentParagraphReturn(new_content=new_content)
+    except Exception as e:
+        print(f"(from router_rewrite_content_paragraph, generate.py) 重写段落内容异常: {e}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"重写段落内容失败: {str(e)}")
 
 
 # @generate_router.post("/api/outline")

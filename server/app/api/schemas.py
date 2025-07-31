@@ -70,3 +70,16 @@ class RewriteSectionRequest(BaseModel):
 class RewriteSectionReturn(BaseModel):
     success: bool = True
     new_section: dict
+
+# For rewriting a content paragraph
+class RewriteContentParagraphRequest(BaseModel):
+    plan_title: str
+    section_title: str
+    subtitle_title: str
+    current_content: str
+    context: str
+    user_requirement: Optional[str] = ""
+
+class RewriteContentParagraphReturn(BaseModel):
+    success: bool = True
+    new_content: str
