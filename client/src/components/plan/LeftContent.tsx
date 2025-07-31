@@ -63,7 +63,13 @@ const LeftContent = ({
                             pageMode === 'outline' ? (
                                 <OutlineEditor initialData={data} />
                             ) : (
-                                fullContent && <ContentEditor content={fullContent.content} />
+                                fullContent && data && (
+                                    <ContentEditor 
+                                        initialContentData={fullContent.content}
+                                        planTitle={data.title}
+                                        policyContext={data.policy}
+                                    />
+                                )
                             )
                         ) : (
                             <div className="text-center text-gray-400">请先在首页输入标题以生成大纲</div>
