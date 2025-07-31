@@ -3,7 +3,7 @@
 import { useRef, useEffect } from "react";
 
 // editable component
-const EditableContent = ({
+const EditableBlock = ({
     defaultValue,
     onChange,
 }: {
@@ -44,4 +44,4 @@ const EditableContent = ({
 };
 
 
-export default EditableContent;
+export default EditableBlock;

@@ -31,25 +31,28 @@ export const generateOutline = async(
     return await res.json();
 };
 
-// export const rewriteOutline = async(
-//     title: string,
-//     context: string,
-//     curr_outline: string,
-//     requirements?: string,
-// ) => {
-//     const res = await fetch(`${API_BASE_URL}/api/rewrite/outline`, {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({
-//             title,
-//             selectedKbList, // directy convey context select knowledgebase
-//         }),
-//     });
-// };
+// TODO: further implement it later
+export const rewriteOutline = async(
+    title: string,
+    context: string,
+) => {
+    const res = await fetch(`${API_BASE_URL}/api/rewrite/outline`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            title,
+            context, 
+        }),
+    });
+    if (!res.ok) {
+        throw new Error('重写大纲失败: generateApi.ts');
+    }
+    return res.json();
+};
 
-// TOSTRUCT
+
 export const generateContent = async(
     title: string,
     outline: string,

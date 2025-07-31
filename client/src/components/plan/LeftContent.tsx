@@ -19,9 +19,20 @@ interface LeftContentProps {
     setPageMode: (mode: PageMode) => void;
     onGenerateContent: () => void; 
     fullContent: GenerateContentResponse | null; 
+    onRewriteOutline: () => void;
+    isRewriting: boolean;
 };
 
-const LeftContent = ({loading, data, pageMode, setPageMode, onGenerateContent, fullContent}: LeftContentProps) => {
+const LeftContent = ({
+    loading, 
+    data, 
+    pageMode, 
+    setPageMode, 
+    onGenerateContent, 
+    fullContent,
+    onRewriteOutline, 
+    isRewriting,      
+}: LeftContentProps) => {
 
     return (
         <div className="flex flex-col h-full min-h-0">
@@ -48,7 +59,6 @@ const LeftContent = ({loading, data, pageMode, setPageMode, onGenerateContent, f
                         {loading ? (
                             <div className="text-center text-gray-500">正在生成大纲...</div>
                         ) : data ? (
-                            // 5. 根据模式切换显示
                             pageMode === 'outline' ? (
                                 <OutlineEditor outline={typeof data.outline === "string" ? JSON.parse(data.outline) : data.outline} />
                             ) : (
@@ -64,7 +74,10 @@ const LeftContent = ({loading, data, pageMode, setPageMode, onGenerateContent, f
             <div className="mt-auto flex flex-wrap gap-2 justify-between items-center pt-4">
                 {pageMode === 'outline' ? (
                     <>
-                        <RewriteOutlineBtn />
+                        <RewriteOutlineBtn 
+                            onClick={onRewriteOutline}
+                            isLoading={isRewriting}
+                        />
                         <div className="flex flex-wrap gap-2">
                             <WriteContentBtn onClick={onGenerateContent}/>
                             <DownloadBtn />

@@ -35,3 +35,14 @@ class GenerateContentReturn(BaseModel):
     success: bool = True
     title: str
     content: dict | str # accept dict for content_outline, or str for error message
+
+# For /api/rewrite/outline
+class RewriteOutlineRequest(BaseModel):
+    title: str
+    context: str
+
+class RewriteOutlineReturn(BaseModel):
+    success: bool
+    title: str
+    outline: str
+

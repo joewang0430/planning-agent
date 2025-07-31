@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
-import { generateOutline, generateContent } from '../../api/generateApi';
+import { generateOutline, generateContent, rewriteOutline } from '../../api/generateApi';
 import { GenerateOutlineResponse, GenerateContentResponse } from "@/data/generateTypes";
 import RightContent from "@/components/plan/RightContent";
 import LeftContent from "@/components/plan/LeftContent";
@@ -22,6 +22,9 @@ const Plan = () => {
     // Content part
     const [fullContent, setFullContent] = useState<GenerateContentResponse | null>(null);
     const [isContentLoading, setIsContentLoading] = useState(false);
+
+    // General Rewrite
+    const [isRewriting, setIsRewriting] = useState(false);
 
     // Segmentation ratio status
     const [leftWidth, setLeftWidth] = useState(60); // default left 60%
@@ -43,6 +46,26 @@ const Plan = () => {
                 });
         }
     }, [title]);
+
+    // function rewrite outline
+    const handleRewriteOutline = async () => {
+        if (!data || !data.policy) {
+            console.error("无法重写：缺少原始数据或 policy");
+            return;
+        }
+        setIsRewriting(true);
+        try {
+            const res = await rewriteOutline(title, data.policy);
+            setData(prevData => ({
+                ...prevData!,
+                outline: res.outline, 
+            }));
+        } catch (err) {
+            console.error('(from Plan index.tsx) rewriteOutline API failed:', err);
+        } finally {
+            setIsRewriting(false);
+        }
+    };
 
     // function for adding content
     const handleGenerateContent = async () => {
@@ -114,6 +137,8 @@ const Plan = () => {
                         setPageMode={setPageMode}
                         onGenerateContent={handleGenerateContent}
                         fullContent={fullContent} 
+                        onRewriteOutline={handleRewriteOutline} 
+                        isRewriting={isRewriting}
                     />
                 </div>
                 {/* drag dividing line */}
@@ -150,6 +175,8 @@ const Plan = () => {
                         setPageMode={setPageMode}
                         onGenerateContent={handleGenerateContent}
                         fullContent={fullContent} 
+                        onRewriteOutline={handleRewriteOutline} 
+                        isRewriting={isRewriting}
                     />
                 </div>
                 <div className="bg-white rounded-lg border border-plagt-blue-1 p-6 shadow-sm flex flex-col h-[80vh] min-h-0">

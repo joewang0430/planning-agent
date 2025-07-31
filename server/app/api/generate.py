@@ -10,6 +10,8 @@ from .schemas import (
     GenerateOutlineReturn,
     GenerateContentRequest,
     GenerateContentReturn,
+    RewriteOutlineRequest,
+    RewriteOutlineReturn,
 )
 from ..ai.graph.outline import app as outline_graph_app
 from ..ai.graph.content import app as content_graph_app
@@ -61,6 +63,21 @@ async def router_generate_outline(req: GenerateOutlineRequest):
         print(f"(from router_generate_outline, generate.py) 生成大纲异常: {e}")
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"生成失败: {str(e)}, (from router_generate_outline, generate.py)")
+
+
+@generate_router.post("/api/rewrite/outline")
+async def router_rewrite_outline(req: RewriteOutlineRequest):
+    try:
+        new_outline = outline_agent.generate_outline(req.title, req.context)
+        return RewriteOutlineReturn(
+            success=True,
+            title=req.title,
+            outline=new_outline
+        )
+    except Exception as e:
+        print(f"(from router_rewrite_outline, generate.py) 重写大纲异常: {e}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"重写大纲失败: {str(e)}, (from router_rewrite_outline, generate.py)")
 
 
 @generate_router.post("/api/content")

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import EditableContent from "./EditableContent";
+import EditableBlock from "./EditableBlock";
 
 interface EditableTitleProps {
     defaultValue: string;
@@ -24,7 +24,7 @@ const EditableTitle = ({
             onMouseLeave={() => setHover(false)}
         >
             {/* editable content area */}
-            <EditableContent
+            <EditableBlock
                 defaultValue={defaultValue}
                 onChange={onChange}
             />
