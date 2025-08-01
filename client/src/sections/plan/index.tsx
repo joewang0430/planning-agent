@@ -25,6 +25,8 @@ const Plan = () => {
 
     // General Rewrite
     const [isRewriting, setIsRewriting] = useState(false);
+    // 新增：为“重写全部内容”功能创建独立的加载状态
+    const [isRewritingContent, setIsRewritingContent] = useState(false);
 
     // Segmentation ratio status
     const [leftWidth, setLeftWidth] = useState(60); // default left 60%
@@ -84,6 +86,28 @@ const Plan = () => {
         }
     };
 
+    // 新增：处理“重写全部内容”的逻辑
+    const handleRewriteAllContent = async () => {
+        if (!data || !fullContent) {
+            console.error("无法重写内容：缺少大纲或原始内容。");
+            return;
+        }
+        setIsRewritingContent(true);
+        try {
+            // 复用 generateContent API
+            const res = await generateContent(
+                title, 
+                JSON.stringify(fullContent.content.content_outline), 
+                data.policy
+            );
+            setFullContent(res); // 更新内容状态
+        } catch (err) {
+            console.error('(from Plan index.tsx) handleRewriteAllContent API failed:', err);
+        } finally {
+            setIsRewritingContent(false);
+        }
+    };
+
     // dragging process function
     const handleMouseDown = () => setIsDragging(true);
 
@@ -139,6 +163,8 @@ const Plan = () => {
                         fullContent={fullContent} 
                         onRewriteOutline={handleRewriteOutline} 
                         isRewriting={isRewriting}
+                        onRewriteContent={handleRewriteAllContent}
+                        isRewritingContent={isRewritingContent}
                     />
                 </div>
                 {/* drag dividing line */}
@@ -156,13 +182,6 @@ const Plan = () => {
                     style={{ width: `${100 - leftWidth}%` }}
                 >
                     <RightContent />
-                    {/* Debug View for Context */}
-                    {/* <div className="mt-4 p-2 border-t border-dashed border-red-400 bg-red-50">
-                        <h5 className="font-bold text-red-600">Context Debug View:</h5>
-                        <pre className="text-xs text-red-700 bg-white p-2 rounded overflow-auto">
-                        {JSON.stringify(selectedKbList, null, 2)}
-                        </pre>
-                    </div> */}
                 </div>
             </div>
             {/* modile layout */}
@@ -177,17 +196,12 @@ const Plan = () => {
                         fullContent={fullContent} 
                         onRewriteOutline={handleRewriteOutline} 
                         isRewriting={isRewriting}
+                        onRewriteContent={handleRewriteAllContent}
+                        isRewritingContent={isRewritingContent}
                     />
                 </div>
                 <div className="bg-white rounded-lg border border-plagt-blue-1 p-6 shadow-sm flex flex-col h-[80vh] min-h-0">
                     <RightContent />
-                    {/* Debug View for Context */}
-                    {/* <div className="mt-4 p-2 border-t border-dashed border-red-400 bg-red-50">
-                        <h5 className="font-bold text-red-600">Context Debug View:</h5>
-                        <pre className="text-xs text-red-700 bg-white p-2 rounded overflow-auto">
-                        {JSON.stringify(selectedKbList, null, 2)}
-                        </pre>
-                    </div> */}
                 </div>
             </div>
         </main>

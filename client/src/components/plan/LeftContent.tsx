@@ -1,6 +1,5 @@
 import { GenerateOutlineResponse, GenerateContentResponse } from "@/data/generateTypes";
 import { PageMode } from "@/data/contentTypes";
-import { generateContent } from "@/api/generateApi";
 import React from "react";
 import OutlineEditor from "./internals/OutlineEditor";
 import PolicyDisplay from "./PolicyDisplay";
@@ -10,7 +9,6 @@ import DownloadBtn from "./buttons/DownloadBtn";
 import WriteContentBtn from "./buttons/WriteContentBtn";
 import RewriteContentBtn from "./buttons/RewriteContentBtn";
 import FinishPlanningBtn from "./buttons/FinishPlanningBtn";
-import ContentDisplay from "./internals/ContentDisplay";
 import ContentEditor from "./internals/ContentEditor";
 
 interface LeftContentProps {
@@ -22,6 +20,8 @@ interface LeftContentProps {
     fullContent: GenerateContentResponse | null; 
     onRewriteOutline: () => void;
     isRewriting: boolean;
+    onRewriteContent: () => void;
+    isRewritingContent: boolean;
 };
 
 const LeftContent = ({
@@ -32,7 +32,9 @@ const LeftContent = ({
     onGenerateContent, 
     fullContent,
     onRewriteOutline, 
-    isRewriting,      
+    isRewriting,
+    onRewriteContent,
+    isRewritingContent,
 }: LeftContentProps) => {
 
     return (
@@ -42,39 +44,24 @@ const LeftContent = ({
 
             {/* middle rollable */}
             <div className="flex-1 min-h-0 overflow-y-auto py-2">
-                {/* <div className="space-y-6">
+                <div className="space-y-6">
                     {loading ? (
-                        <div className="text-center py-8">
-                            <div className="text-blue-500">正在生成中...</div>
-                        </div>
+                        <div className="text-center text-gray-500">正在生成...</div>
                     ) : data ? (
-                        <OutlineEditor outline={typeof data.outline === "string" ? JSON.parse(data.outline) : data.outline} />
-                    ) : (
-                        <div className="text-center py-8 text-gray-500">
-                            加载失败
-                        </div>
-                    )}
-                </div> */}
-                <div className="flex-1 min-h-0 overflow-y-auto py-2">
-                    <div className="space-y-6">
-                        {loading ? (
-                            <div className="text-center text-gray-500">正在生成...</div>
-                        ) : data ? (
-                            pageMode === 'outline' ? (
-                                <OutlineEditor initialData={data} />
-                            ) : (
-                                fullContent && data && (
-                                    <ContentEditor 
-                                        initialContentData={fullContent.content}
-                                        planTitle={data.title}
-                                        policyContext={data.policy}
-                                    />
-                                )
-                            )
+                        pageMode === 'outline' ? (
+                            <OutlineEditor initialData={data} />
                         ) : (
-                            <div className="text-center text-gray-400">请先在首页输入标题以生成大纲</div>
-                        )}
-                    </div>
+                            fullContent && data && (
+                                <ContentEditor 
+                                    initialContentData={fullContent.content}
+                                    planTitle={data.title}
+                                    policyContext={data.policy}
+                                />
+                            )
+                        )
+                    ) : (
+                        <div className="text-center text-gray-400">请先在首页输入标题以生成大纲</div>
+                    )}
                 </div>
             </div>
             {/* button */}
@@ -92,7 +79,11 @@ const LeftContent = ({
                     </>
                 ) : (
                     <>
-                        <RewriteContentBtn />
+                        <RewriteContentBtn 
+                            onClick={onRewriteContent}
+                            isLoading={isRewritingContent}
+                            disabled={!fullContent}
+                        />
                         <div className="flex flex-wrap gap-2">
                             <FinishPlanningBtn />
                             <DownloadBtn />

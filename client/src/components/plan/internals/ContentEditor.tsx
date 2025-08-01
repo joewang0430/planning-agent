@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { GenerateContentResponse } from "@/data/generateTypes";
 import EditableContent from "./EditableContent";
-import RewriteInput from "../RewriteInput"; //
+import RewriteInput from "../RewriteInput";
 import { rewriteContentParagraph } from "@/api/generateApi";
 
 interface ContentEditorProps {
@@ -12,24 +12,24 @@ interface ContentEditorProps {
     policyContext: string;
 }
 
-// Define a type to track the target
 type RewriteTarget = {
     sectionIndex: number;
     childIndex: number;
 } | null;
 
 const ContentEditor = ({ initialContentData, planTitle, policyContext }: ContentEditorProps) => {
-    // State the content data for easy updates
+    // 内部状态，用于管理和编辑内容
     const [content, setContent] = useState(initialContentData);
     const [rewriteTarget, setRewriteTarget] = useState<RewriteTarget>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    // When external data changes, synchronize the internal state
+    // 核心修复：使用 useEffect 同步外部传入的数据
+    // 当 initialContentData 这个 prop 发生变化时（例如，在父组件中重写了全部内容），
+    // 这个 effect 会被触发，从而更新组件的内部状态 content。
     useEffect(() => {
         setContent(initialContentData);
     }, [initialContentData]);
 
-    // Implement the logic for API calls and content updates
     const handleRewriteSubmit = async (user_requirement: string) => {
         if (!rewriteTarget) return;
         setIsLoading(true);
@@ -54,7 +54,6 @@ const ContentEditor = ({ initialContentData, planTitle, policyContext }: Content
             );
 
             if (res && res.success) {
-                // Create a deep copy of the content to modify it safely
                 const newContentOutline = JSON.parse(JSON.stringify(content.content_outline));
                 newContentOutline[sectionIndex].children[childIndex].content = res.new_content;
                 setContent({ ...content, content_outline: newContentOutline });
@@ -64,7 +63,7 @@ const ContentEditor = ({ initialContentData, planTitle, policyContext }: Content
             alert("重写内容失败，请检查网络或联系管理员。");
         } finally {
             setIsLoading(false);
-            setRewriteTarget(null); // Close the input box after completion
+            setRewriteTarget(null);
         }
     };
 
@@ -82,7 +81,6 @@ const ContentEditor = ({ initialContentData, planTitle, policyContext }: Content
                                 {child.title}
                             </h3>
                             
-                            {/* Above the content block, render the input box based on the conditions */}
                             {rewriteTarget && rewriteTarget.sectionIndex === i && rewriteTarget.childIndex === j && (
                                 <div className="mb-2">
                                     <RewriteInput
@@ -95,7 +93,6 @@ const ContentEditor = ({ initialContentData, planTitle, policyContext }: Content
 
                             <EditableContent 
                                 defaultValue={child.content || ""}
-                                // When clicking the button, set the paragraph you want to rewrite currently
                                 onRewriteClick={() => setRewriteTarget({ sectionIndex: i, childIndex: j })}
                             />
                         </div>
